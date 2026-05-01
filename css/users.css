@@ -1,0 +1,107 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #141414; 
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.profiles-container {
+    text-align: center;
+}
+
+h1 {
+    font-size: 3.5rem;
+    font-weight: 500;
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+}
+
+.profiles-list {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    margin-bottom: 50px;
+}
+
+.profile {
+    cursor: pointer;
+    width: 150px;
+    text-align: center;
+}
+
+.profile-icon {
+    width: 150px;
+    height: 150px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    border: 3px solid transparent;
+    transition: border-color 0.3s;
+}
+
+.profile-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile:hover .profile-icon {
+    border-color: white;
+}
+
+.profile:hover .profile-name {
+    color: white;
+}
+
+.profile-name {
+    color: #808080;
+    font-size: 1.2rem;
+    display: block;
+    outline: none; 
+    transition: color 0.3s;
+}
+
+.profile-icon.plus {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-icon.plus span {
+    font-size: 5rem;
+    color: #808080;
+}
+
+.profile:hover .plus span {
+    color: white;
+}
+
+.manage-profiles {
+    background: transparent;
+    color: #808080;
+    border: 1px solid #808080;
+    padding: 10px 30px;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 20px;
+}
+
+.manage-profiles:hover {
+    color: white;
+    border-color: white;
+}
+
+a{
+    text-decoration: none;
+    color: inherit;
+
+}
