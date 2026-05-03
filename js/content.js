@@ -12,35 +12,32 @@ const streamflixContent = [
   { id: 11, title: "Narcos",                        type: "TV Show", genre: "crime",     year: 2015, rating: "TV-MA", language: "Spanish", description: "The true story of Colombia's infamously violent and powerful drug cartels.", img: "../content-images/Narcos.jpg" },
   { id: 12, title: "Lupin",                         type: "TV Show", genre: "thriller",  year: 2021, rating: "TV-MA", language: "French",  description: "A gentleman thief inspired by Arsène Lupin seeks revenge against a corrupt family.", img: "../content-images/Lupin.jpg" },
   { id: 13, title: "Emily in Paris",                type: "TV Show", genre: "romance",   year: 2020, rating: "TV-MA", language: "French",  description: "An ambitious American marketing executive moves to Paris for an unexpected job opportunity.", img: "../content-images/EmilyInParis.jpg" },
-  
-  // cover photos need to be added for the content below
-
-  { id: 14, title: "Bridgerton",                    type: "TV Show", genre: "romance",   year: 2020, rating: "TV-MA", language: "English", description: "Eight close-knit siblings of the Bridgerton family seek love in Regency London." },
-  { id: 15, title: "Inception",                     type: "Movie",   genre: "sci-fi",    year: 2010, rating: "PG-13", language: "English", description: "A thief enters dreams to steal secrets from deep within the subconscious." },
-  { id: 16, title: "Interstellar",                  type: "Movie",   genre: "sci-fi",    year: 2014, rating: "PG-13", language: "English", description: "Astronauts travel through a wormhole in search of a new home for humanity." },
-  { id: 17, title: "The Dark Knight",               type: "Movie",   genre: "action",    year: 2008, rating: "PG-13", language: "English", description: "Batman faces his greatest challenge when the Joker unleashes chaos on Gotham." },
-  { id: 18, title: "Parasite",                      type: "Movie",   genre: "thriller",  year: 2019, rating: "R",     language: "Korean",  description: "A poor family schemes to work for a wealthy household with unexpected results." },
-  { id: 19, title: "Bird Box",                      type: "Movie",   genre: "horror",    year: 2018, rating: "R",     language: "English", description: "A mysterious force decimates the population; survivors must blindfold themselves." },
-  { id: 20, title: "Extraction",                    type: "Movie",   genre: "action",    year: 2020, rating: "R",     language: "English", description: "A mercenary is hired to rescue a kidnapped boy from a ruthless gangster." },
-  { id: 21, title: "The Platform",                  type: "Movie",   genre: "thriller",  year: 2019, rating: "TV-MA", language: "Spanish", description: "In a prison with vertical food distribution, only the top levels eat well." },
-  { id: 22, title: "Klaus",                         type: "Movie",   genre: "animation", year: 2019, rating: "PG",    language: "English", description: "A selfish postman forms an unlikely friendship with a mysterious toymaker." },
-  { id: 23, title: "The Trial of the Chicago 7",   type: "Movie",   genre: "drama",     year: 2020, rating: "R",     language: "English", description: "Seven defendants are charged with conspiracy at the 1968 Democratic National Convention." },
-  { id: 24, title: "Army of the Dead",              type: "Movie",   genre: "horror",    year: 2021, rating: "R",     language: "English", description: "A group of mercenaries plans a heist in the middle of a zombie apocalypse." },
-  { id: 25, title: "Don't Look Up",                type: "Movie",   genre: "comedy",    year: 2021, rating: "R",     language: "English", description: "Two scientists try to warn humanity about a comet heading for Earth." },
-  { id: 26, title: "The Gray Man",                  type: "Movie",   genre: "action",    year: 2022, rating: "PG-13", language: "English", description: "A CIA operative turned mercenary is hunted across the globe by a psychopathic rival." },
-  { id: 27, title: "Glass Onion",                  type: "Movie",   genre: "comedy",    year: 2022, rating: "PG-13", language: "English", description: "Detective Benoit Blanc investigates a murder mystery on a billionaire's private island." },
-  { id: 28, title: "All Quiet on the Western Front", type: "Movie", genre: "drama",     year: 2022, rating: "R",     language: "German",  description: "A young German soldier experiences the brutal reality of World War I." },
-  { id: 29, title: "The Irishman",                  type: "Movie",   genre: "crime",     year: 2019, rating: "R",     language: "English", description: "A hitman recalls his work for the mob and his involvement with Jimmy Hoffa." },
-  { id: 30, title: "Enola Holmes",                  type: "Movie",   genre: "adventure", year: 2020, rating: "PG-13", language: "English", description: "Sherlock Holmes' younger sister sets out to find their missing mother." },
-  { id: 31, title: "The Last of Us",               type: "Game",    genre: "horror",    year: 2013, rating: "M",     language: "English", description: "Survive a post-apocalyptic world overrun by infected as you escort a young girl to safety." },
-  { id: 32, title: "Cyberpunk 2077",               type: "Game",    genre: "sci-fi",    year: 2020, rating: "M",     language: "English", description: "Navigate the dangerous streets of Night City as a mercenary fighting for survival." },
-  { id: 33, title: "God of War",                   type: "Game",    genre: "fantasy",   year: 2018, rating: "M",     language: "English", description: "Kratos and his son journey through the realms of Norse mythology." },
-  { id: 34, title: "Among Us",                     type: "Game",    genre: "comedy",    year: 2018, rating: "E",     language: "English", description: "Work together to complete tasks on a spaceship — but watch out for the impostors." },
-  { id: 35, title: "Minecraft",                    type: "Game",    genre: "adventure", year: 2011, rating: "E10+",  language: "English", description: "Build, explore, and survive in an infinite world made entirely of blocks." },
-  { id: 36, title: "GTA V",                        type: "Game",    genre: "action",    year: 2013, rating: "M",     language: "English", description: "Three criminals pull off heists across the sprawling open world of Los Santos." },
+  { id: 14, title: "Bridgerton",                    type: "TV Show", genre: "romance",   year: 2020, rating: "TV-MA", language: "English", description: "Eight close-knit siblings of the Bridgerton family seek love in Regency London.", img: "../content-images/Bridgerton.jpg" },
+  { id: 15, title: "Inception",                     type: "Movie",   genre: "sci-fi",    year: 2010, rating: "PG-13", language: "English", description: "A thief enters dreams to steal secrets from deep within the subconscious.", img: "../content-images/Inception.jpg" },
+  { id: 16, title: "Interstellar",                  type: "Movie",   genre: "sci-fi",    year: 2014, rating: "PG-13", language: "English", description: "Astronauts travel through a wormhole in search of a new home for humanity.", img: "../content-images/Interstellar.jpg" },
+  { id: 17, title: "The Dark Knight",               type: "Movie",   genre: "action",    year: 2008, rating: "PG-13", language: "English", description: "Batman faces his greatest challenge when the Joker unleashes chaos on Gotham.", img: "../content-images/TheDarkKnight.jpg" },
+  { id: 18, title: "Parasite",                      type: "Movie",   genre: "thriller",  year: 2019, rating: "R",     language: "Korean",  description: "A poor family schemes to work for a wealthy household with unexpected results.", img: "../content-images/Parasite.jpg" },
+  { id: 19, title: "Bird Box",                      type: "Movie",   genre: "horror",    year: 2018, rating: "R",     language: "English", description: "A mysterious force decimates the population; survivors must blindfold themselves.", img: "../content-images/Birdbox.jpg" },
+  { id: 20, title: "Extraction",                    type: "Movie",   genre: "action",    year: 2020, rating: "R",     language: "English", description: "A mercenary is hired to rescue a kidnapped boy from a ruthless gangster.", img: "../content-images/Extraction.jpg" },
+  { id: 21, title: "The Platform",                  type: "Movie",   genre: "thriller",  year: 2019, rating: "TV-MA", language: "Spanish", description: "In a prison with vertical food distribution, only the top levels eat well.", img: "../content-images/ThePlatform.jpg" },
+  { id: 22, title: "Klaus",                         type: "Movie",   genre: "animation", year: 2019, rating: "PG",    language: "English", description: "A selfish postman forms an unlikely friendship with a mysterious toymaker.", img: "../content-images/Klaus.jpg" },
+  { id: 23, title: "The Trial of the Chicago 7",   type: "Movie",   genre: "drama",     year: 2020, rating: "R",     language: "English", description: "Seven defendants are charged with conspiracy at the 1968 Democratic National Convention.", img: "../content-images/Chicago7.jpg" },
+  { id: 24, title: "Army of the Dead",              type: "Movie",   genre: "horror",    year: 2021, rating: "R",     language: "English", description: "A group of mercenaries plans a heist in the middle of a zombie apocalypse.", img: "../content-images/ArmyOfTheDead.jpg" },
+  { id: 25, title: "Don't Look Up",                type: "Movie",   genre: "comedy",    year: 2021, rating: "R",     language: "English", description: "Two scientists try to warn humanity about a comet heading for Earth.", img: "../content-images/DontLookUp.jpg" },
+  { id: 26, title: "The Gray Man",                  type: "Movie",   genre: "action",    year: 2022, rating: "PG-13", language: "English", description: "A CIA operative turned mercenary is hunted across the globe by a psychopathic rival.", img: "../content-images/TheGreyMan.jpg" },
+  { id: 27, title: "Glass Onion",                  type: "Movie",   genre: "comedy",    year: 2022, rating: "PG-13", language: "English", description: "Detective Benoit Blanc investigates a murder mystery on a billionaire's private island.", img: "../content-images/GLassOnion.jpg" },
+  { id: 28, title: "All Quiet on the Western Front", type: "Movie", genre: "drama",     year: 2022, rating: "R",     language: "German",  description: "A young German soldier experiences the brutal reality of World War I.", img: "../content-images/WestrenFront.jpg" },
+  { id: 29, title: "The Irishman",                  type: "Movie",   genre: "crime",     year: 2019, rating: "R",     language: "English", description: "A hitman recalls his work for the mob and his involvement with Jimmy Hoffa.", img: "../content-images/TheIrishman.jpg" },
+  { id: 30, title: "Enola Holmes",                  type: "Movie",   genre: "adventure", year: 2020, rating: "PG-13", language: "English", description: "Sherlock Holmes' younger sister sets out to find their missing mother.", img: "../content-images/EnolaHolms.jpg" },
+  { id: 31, title: "The Last of Us",               type: "Game",    genre: "horror",    year: 2013, rating: "M",     language: "English", description: "Survive a post-apocalyptic world overrun by infected as you escort a young girl to safety.", img: "../content-images/TheLastOFUS.jpg" },
+  { id: 32, title: "Cyberpunk 2077",               type: "Game",    genre: "sci-fi",    year: 2020, rating: "M",     language: "English", description: "Navigate the dangerous streets of Night City as a mercenary fighting for survival.", img: "../content-images/Cyberpunk.jpg" },
+  { id: 33, title: "God of War",                   type: "Game",    genre: "fantasy",   year: 2018, rating: "M",     language: "English", description: "Kratos and his son journey through the realms of Norse mythology.", img: "../content-images/GodOfWar.jpg" },
+  { id: 34, title: "Among Us",                     type: "Game",    genre: "comedy",    year: 2018, rating: "E",     language: "English", description: "Work together to complete tasks on a spaceship — but watch out for the impostors.", img: "../content-images/AmongUs.jpg" },
+  { id: 35, title: "Minecraft",                    type: "Game",    genre: "adventure", year: 2011, rating: "E10+",  language: "English", description: "Build, explore, and survive in an infinite world made entirely of blocks.", img: "../content-images/Minecraft.jpg" },
+  { id: 36, title: "GTA V",                        type: "Game",    genre: "action",    year: 2013, rating: "M",     language: "English", description: "Three criminals pull off heists across the sprawling open world of Los Santos.", img: "../content-images/GTAV.jpg" },
 ];
 
-//temp cover colors
+//temp cover colors - to be deleted !!
 const genreColors = {
   "sci-fi":      "#1a6bb5",
   "thriller":    "#8b1a1a",
@@ -165,8 +162,32 @@ function renderRow(label, items, trending) {
 }
 
 function scrollRow(btn, direction) {
-  const rowItems = btn.parentElement.querySelector('.row-items');
-  rowItems.scrollBy({ left: direction * 680, behavior: 'smooth' });
+  const rowItems = btn.closest('.row-wrapper').querySelector('.row-items');
+  const next = Math.max(0, Math.min(
+    rowItems.scrollWidth - rowItems.clientWidth,
+    rowItems.scrollLeft + direction * rowItems.clientWidth
+  ));
+  rowItems.scrollTo({ left: next, behavior: 'smooth' });
+  setTimeout(() => updateScrollButtons(rowItems), 450);
+}
+
+function updateScrollButtons(rowItems) {
+  const wrapper = rowItems.closest('.row-wrapper');
+  if (!wrapper) return;
+  const cur = rowItems.scrollLeft;
+  const max = rowItems.scrollWidth - rowItems.clientWidth;
+  wrapper.querySelector('.scroll-left')?.classList.toggle('visible', cur > 2);
+  wrapper.querySelector('.scroll-right')?.classList.toggle('visible', cur < max - 2);
+}
+
+function initScrollButtons() {
+  document.querySelectorAll('.row-items').forEach(rowItems => {
+    updateScrollButtons(rowItems);
+    if (!rowItems._scrollInit) {
+      rowItems._scrollInit = true;
+      rowItems.addEventListener('scroll', () => updateScrollButtons(rowItems));
+    }
+  });
 }
 
 function renderHomeContent() {
@@ -176,6 +197,8 @@ function renderHomeContent() {
     if (!items.length) return "";
     return renderRow(row.label, items, row.trending);
   }).join("");
+  setTimeout(initScrollButtons, 100);
 }
 
+window.addEventListener('resize', initScrollButtons);
 document.addEventListener("DOMContentLoaded", renderHomeContent);

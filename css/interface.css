@@ -1,10 +1,9 @@
 body {
-     /* background: url('../images/HomeScreen.png'); */
-        background: #000;
-        background-size: 100% 100%;
-        background-position: center;
-        background-attachment: fixed;
-        display: flex;
+    /* background: url('../images/HomeScreen.png'); */
+    background: #000;
+    min-height: 100vh;
+    overflow-x: hidden;
+    margin: 0;
 }
 
 .main-header {
@@ -130,11 +129,14 @@ body {
 /* ===== CONTENT AREA ===== */
 .content-area {
     margin-top: 84px;
-    padding: 0 4% 40px;
+    padding: 0 0 40px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .content-row {
     margin-bottom: 36px;
+    padding: 0 4%;
 }
 
 .row-label {
@@ -153,7 +155,7 @@ body {
     display: flex;
     gap: 8px;
     overflow-x: auto;
-    padding-bottom: 8px;
+    scroll-behavior: smooth;
     scrollbar-width: none;
 }
 
@@ -161,31 +163,34 @@ body {
     display: none;
 }
 
-/* ===== SCROLL BUTTONS ===== */
+/* ===== CAROUSEL BUTTONS ===== */
 .scroll-btn {
     position: absolute;
     top: 0;
-    height: 100%;
-    width: 48px;
-    background: rgba(0, 0, 0, 0.65);
+    height: 250px;
+    width: 50px;
+    background: rgba(0, 0, 0, 0.6);
     border: none;
     color: white;
-    font-size: 1.6rem;
+    font-size: 2rem;
+    font-weight: bold;
     cursor: pointer;
-    z-index: 5;
+    z-index: 10;
     opacity: 0;
-    transition: opacity 0.2s, background 0.2s;
+    pointer-events: none;
+    transition: opacity 0.25s, background 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.content-row:hover .scroll-btn {
+.scroll-btn.visible {
     opacity: 1;
+    pointer-events: all;
 }
 
 .scroll-btn:hover {
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.88);
 }
 
 .scroll-left {

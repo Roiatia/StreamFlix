@@ -37,18 +37,21 @@ function renderTVShows() {
   const shows = streamflixContent.filter(c => c.type === "TV Show");
   document.getElementById("contentRows").innerHTML =
     categoryHero("TV Shows") + genreRows(shows);
+  setTimeout(initScrollButtons, 100);
 }
 
 function renderMovies() {
   const movies = streamflixContent.filter(c => c.type === "Movie");
   document.getElementById("contentRows").innerHTML =
     categoryHero("Movies") + genreRows(movies);
+  setTimeout(initScrollButtons, 100);
 }
 
 function renderGames() {
   const games = streamflixContent.filter(c => c.type === "Game");
   document.getElementById("contentRows").innerHTML =
     categoryHero("Games") + renderRow("All Games", games);
+  setTimeout(initScrollButtons, 100);
 }
 
 function renderNewAndPopular() {
@@ -63,6 +66,7 @@ function renderNewAndPopular() {
     categoryHero("New &amp; Popular") +
     (latest.length ? renderRow("Latest Releases", latest) : "") +
     renderRow("Recently Added", recent);
+  setTimeout(initScrollButtons, 100);
 }
 
 function renderMyList() {
@@ -82,6 +86,7 @@ function renderMyList() {
   const items = ids.map(id => streamflixContent.find(c => c.id === id)).filter(Boolean);
   container.innerHTML =
     categoryHero("My List") + renderRow("Saved Titles", items);
+  setTimeout(initScrollButtons, 100);
 }
 
 function renderByLanguage() {
@@ -91,6 +96,7 @@ function renderByLanguage() {
     languages.map(lang =>
       renderRow(escapeHtml(lang), streamflixContent.filter(c => c.language === lang))
     ).join("");
+  setTimeout(initScrollButtons, 100);
 }
 
 function capitalize(str) {
