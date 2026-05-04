@@ -62,11 +62,122 @@ const homeRows = [
   { label: "Sci-Fi & Fantasy",      filter: c => ["sci-fi", "fantasy"].includes(c.genre) && c.type !== "Game" },
 ];
 
+const baseLikeCounts = {
+   1: 847,  2: 923,  3: 412,  4: 784,  5: 905,
+   6: 523,  7: 618,  8: 741,  9: 689, 10: 577,
+  11: 443, 12: 398, 13: 312, 14: 456, 15: 892,
+  16: 819, 17: 967, 18: 723, 19: 504, 20: 387,
+  21: 276, 22: 445, 23: 334, 24: 291, 25: 612,
+  26: 478, 27: 723, 28: 389, 29: 567, 30: 298,
+  31: 712, 32: 634, 33: 791, 34: 445, 35: 878, 36: 834,
+};
+
+// ----- Persona state -----
+
+function createEmptyPersonaState() {
+  return { watchedIds: [], likedIds: [], myListIds: [] };
+}
+
+function getCurrentPersonaId() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('persona') || "guest";
+}
+
+function getPersonaStorageKey() {
+  return `streamflix_persona_${getCurrentPersonaId()}`;
+}
+
+function getPersonaState() {
+  const key = getPersonaStorageKey();
+
+  try {
+    const saved = localStorage.getItem(key);
+    if (saved) {
+      const state = JSON.parse(saved);
+      const savedState = state && typeof state === "object" ? state : {};
+      const normalizedState = {
+        watchedIds: Array.isArray(savedState.watchedIds) ? savedState.watchedIds : [],
+        likedIds: Array.isArray(savedState.likedIds) ? savedState.likedIds : [],
+        myListIds: Array.isArray(savedState.myListIds) ? savedState.myListIds : [],
+      };
+      savePersonaState(normalizedState);
+      return normalizedState;
+    }
+  } catch {}
+
+  const emptyState = createEmptyPersonaState();
+  localStorage.setItem(key, JSON.stringify(emptyState));
+  return emptyState;
+}
+
+function savePersonaState(state) {
+  localStorage.setItem(getPersonaStorageKey(), JSON.stringify(state));
+}
+
+// ----- Watched state -----
+
+function isWatched(id) {
+  return getPersonaState().watchedIds.includes(id);
+}
+
+function markContentWatched(id) {
+  const state = getPersonaState();
+  if (!state.watchedIds.includes(id)) {
+    state.watchedIds.push(id);
+    savePersonaState(state);
+  }
+  updateWatchButtons(id);
+}
+
+function updateWatchButtons(id) {
+  const watched = isWatched(id);
+  document.querySelectorAll(`[data-watch-id="${id}"]`).forEach(btn => {
+    btn.textContent = watched ? 'Watched' : 'Watch';
+    btn.classList.toggle('watched', watched);
+  });
+}
+
+// ----- Like state -----
+
+function getBaseLikeCount(id) {
+  return baseLikeCounts[id] || 0;
+}
+
+function isLiked(id) {
+  return getPersonaState().likedIds.includes(id);
+}
+
+function getDisplayedLikeCount(id) {
+  return getBaseLikeCount(id) + (isLiked(id) ? 1 : 0);
+}
+
+function toggleLike(id) {
+  const state = getPersonaState();
+  const idx = state.likedIds.indexOf(id);
+  if (idx === -1) state.likedIds.push(id); else state.likedIds.splice(idx, 1);
+  savePersonaState(state);
+  updateLikeButtons(id);
+}
+
+function updateLikeButtons(id) {
+  const liked = isLiked(id);
+  const count = getDisplayedLikeCount(id);
+  document.querySelectorAll(`[data-like-id="${id}"]`).forEach(btn => {
+    btn.classList.toggle('liked', liked);
+    btn.classList.remove('heart-pop');
+    void btn.offsetWidth;
+    btn.classList.add('heart-pop');
+    btn.addEventListener('animationend', () => btn.classList.remove('heart-pop'), { once: true });
+  });
+  document.querySelectorAll(`[data-like-count-id="${id}"]`).forEach(span => {
+    span.textContent = count;
+  });
+}
+
 // ----- My List (localStorage) -----
 
 function getMyList() {
-  try { return JSON.parse(localStorage.getItem("streamflixMyList") || "[]"); }
-  catch { return []; }
+  return getPersonaState().myListIds;
 }
 
 function isInMyList(id) {
@@ -74,10 +185,10 @@ function isInMyList(id) {
 }
 
 function toggleMyList(id) {
-  const list = getMyList();
-  const idx = list.indexOf(id);
-  if (idx === -1) list.push(id); else list.splice(idx, 1);
-  localStorage.setItem("streamflixMyList", JSON.stringify(list));
+  const state = getPersonaState();
+  const idx = state.myListIds.indexOf(id);
+  if (idx === -1) state.myListIds.push(id); else state.myListIds.splice(idx, 1);
+  savePersonaState(state);
 
   const inList = isInMyList(id);
   document.querySelectorAll(`[data-list-id="${id}"]`).forEach(btn => {
@@ -120,6 +231,12 @@ function renderTrendingCard(item, rank) {
         <div class="card-info">
           <p class="card-title">${escapeHtml(item.title)}</p>
           <p class="card-meta">${escapeHtml(item.type)} &middot; ${item.year} &middot; ${escapeHtml(item.rating)}</p>
+          <div class="card-actions">
+            <button class="card-watch-btn${isWatched(item.id) ? ' watched' : ''}" data-watch-id="${item.id}"
+              onclick="markContentWatched(${item.id}); event.stopPropagation()">${isWatched(item.id) ? 'Watched' : 'Watch'}</button>
+            <button class="card-like-btn${isLiked(item.id) ? ' liked' : ''}" data-like-id="${item.id}"
+              onclick="toggleLike(${item.id}); event.stopPropagation()">&#9829; <span data-like-count-id="${item.id}">${getDisplayedLikeCount(item.id)}</span></button>
+          </div>
         </div>
       </div>
     </div>`;
@@ -142,6 +259,12 @@ function renderCard(item) {
       <div class="card-info">
         <p class="card-title">${escapeHtml(item.title)}</p>
         <p class="card-meta">${escapeHtml(item.type)} &middot; ${item.year} &middot; ${escapeHtml(item.rating)}</p>
+        <div class="card-actions">
+          <button class="card-watch-btn${isWatched(item.id) ? ' watched' : ''}" data-watch-id="${item.id}"
+            onclick="markContentWatched(${item.id}); event.stopPropagation()">${isWatched(item.id) ? 'Watched' : 'Watch'}</button>
+          <button class="card-like-btn${isLiked(item.id) ? ' liked' : ''}" data-like-id="${item.id}"
+            onclick="toggleLike(${item.id}); event.stopPropagation()">&#9829; <span data-like-count-id="${item.id}">${getDisplayedLikeCount(item.id)}</span></button>
+        </div>
       </div>
     </div>`;
 }
