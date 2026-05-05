@@ -13,6 +13,10 @@ function toggleSearch() {
   }
 }
 
+function isHomeFeedActive() {
+  return document.querySelector('.nav-item.active')?.dataset.category === 'home';
+}
+
 function closeSearch() {
   searchOpen = false;
   const input = document.getElementById("searchInput");
@@ -24,6 +28,7 @@ function closeSearch() {
   container.classList.remove("open");
   overlay.classList.add("hidden");
   contentRows.classList.remove("hidden");
+  resetFeedSearch();
 }
 
 function handleSearch(query) {
@@ -31,6 +36,11 @@ function handleSearch(query) {
   const contentRows = document.getElementById("contentRows");
 
   query = query.trim().toLowerCase();
+
+  if (isHomeFeedActive()) {
+    if (!query) resetFeedSearch(); else filterFeedPosts(query);
+    return;
+  }
 
   if (!query) {
     overlay.classList.add("hidden");

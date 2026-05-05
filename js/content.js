@@ -53,14 +53,60 @@ const genreColors = {
   "documentary": "#2c6e49",
 };
 
-const homeRows = [
-  { label: "Trending Now",          filter: c => c.year >= 2020 && c.type !== "Game", trending: true },
-  { label: "Popular on StreamFlix", filter: c => [1, 2, 4, 5, 8, 15, 16, 17, 18, 26, 27].includes(c.id) },
-  { label: "TV Shows",              filter: c => c.type === "TV Show" },
-  { label: "Movies",                filter: c => c.type === "Movie" },
-  { label: "Thriller & Crime",      filter: c => ["thriller", "crime"].includes(c.genre) && c.type !== "Game" },
-  { label: "Sci-Fi & Fantasy",      filter: c => ["sci-fi", "fantasy"].includes(c.genre) && c.type !== "Game" },
-];
+const popularIds = [1, 2, 4, 5, 8, 15, 16, 17, 18, 26, 27];
+
+function buildPersonaFeedRows() {
+  const state = getPersonaState();
+  const rows = [];
+
+  const watchedItems = state.watchedIds
+    .map(id => streamflixContent.find(c => c.id === id))
+    .filter(Boolean);
+
+  if (watchedItems.length > 0) {
+    rows.push({ label: "Continue Watching", items: watchedItems });
+  }
+
+  const seenGenres = new Set();
+  watchedItems.forEach(watched => {
+    if (seenGenres.size >= 2 || seenGenres.has(watched.genre)) return;
+    const recs = streamflixContent.filter(
+      c => c.genre === watched.genre && !state.watchedIds.includes(c.id)
+    );
+    if (recs.length >= 2) {
+      seenGenres.add(watched.genre);
+      rows.push({ label: `Because you watched ${watched.title}`, items: recs });
+    }
+  });
+
+  if (state.myListIds.length > 0) {
+    rows.push({
+      label: "My List",
+      items: state.myListIds.map(id => streamflixContent.find(c => c.id === id)).filter(Boolean),
+    });
+  }
+
+  rows.push({
+    label: "Trending Now",
+    items: streamflixContent.filter(c => c.year >= 2020 && c.type !== "Game"),
+    trending: true,
+  });
+
+  rows.push({
+    label: "Popular on StreamFlix",
+    items: streamflixContent.filter(c => popularIds.includes(c.id)),
+  });
+
+  rows.push({ label: "TV Shows", items: streamflixContent.filter(c => c.type === "TV Show") });
+  rows.push({ label: "Movies",   items: streamflixContent.filter(c => c.type === "Movie") });
+
+  if (watchedItems.length === 0) {
+    rows.push({ label: "Thriller & Crime", items: streamflixContent.filter(c => ["thriller", "crime"].includes(c.genre) && c.type !== "Game") });
+    rows.push({ label: "Sci-Fi & Fantasy", items: streamflixContent.filter(c => ["sci-fi", "fantasy"].includes(c.genre) && c.type !== "Game") });
+  }
+
+  return rows;
+}
 
 const baseLikeCounts = {
    1: 847,  2: 923,  3: 412,  4: 784,  5: 905,
@@ -140,6 +186,10 @@ function markContentWatched(id) {
   if (!state.watchedIds.includes(id)) {
     state.watchedIds.push(id);
     savePersonaState(state);
+    if (document.querySelector('.nav-item.active')?.dataset.category === 'home') {
+      renderHomeContent();
+      return;
+    }
   }
   updateWatchButtons(id);
 }
@@ -226,6 +276,53 @@ function escapeHtml(str) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+function getFeedSearchText(item) {
+  return `${item.title} ${item.postText || item.description || ''}`.toLowerCase();
+}
+
+function filterFeedPosts(query) {
+  const container = document.getElementById("contentRows");
+  let visibleCount = 0;
+
+  container.querySelector('.trending-row').style.display = 'none';
+
+  container.querySelectorAll('.content-row:not(.trending-row)').forEach(row => {
+    const cards = row.querySelectorAll('[data-feed-post]');
+    let rowVisible = false;
+    cards.forEach(card => {
+      const matches = (card.dataset.searchText || '').includes(query);
+      card.style.display = matches ? '' : 'none';
+      if (matches) { visibleCount++; rowVisible = true; }
+    });
+    row.style.display = rowVisible ? '' : 'none';
+  });
+
+  let msg = container.querySelector('.feed-no-results');
+  if (visibleCount === 0) {
+    if (!msg) {
+      msg = document.createElement('div');
+      msg.className = 'feed-no-results empty-state';
+      container.appendChild(msg);
+    }
+    msg.innerHTML = `<p>No feed posts found for "<strong>${escapeHtml(query)}</strong>".</p>`;
+    msg.style.display = '';
+  } else if (msg) {
+    msg.style.display = 'none';
+  }
+}
+
+function resetFeedSearch() {
+  const container = document.getElementById("contentRows");
+  const trending = container.querySelector('.trending-row');
+  if (trending) trending.style.display = '';
+  container.querySelectorAll('.content-row:not(.trending-row)').forEach(row => {
+    row.style.display = '';
+    row.querySelectorAll('[data-feed-post]').forEach(card => { card.style.display = ''; });
+  });
+  const msg = container.querySelector('.feed-no-results');
+  if (msg) msg.style.display = 'none';
 }
 
 function renderTrendingCard(item, rank) {
@@ -330,11 +427,20 @@ function initScrollButtons() {
 
 function renderHomeContent() {
   const container = document.getElementById("contentRows");
-  container.innerHTML = homeRows.map(row => {
-    const items = streamflixContent.filter(row.filter);
-    if (!items.length) return "";
-    return renderRow(row.label, items, row.trending);
-  }).join("");
+  container.innerHTML = buildPersonaFeedRows()
+    .filter(row => row.items.length > 0)
+    .map(row => renderRow(row.label, row.items, row.trending))
+    .join("");
+
+  container.querySelectorAll('.content-card').forEach(card => {
+    const watchBtn = card.querySelector('[data-watch-id]');
+    if (!watchBtn) return;
+    const item = streamflixContent.find(c => c.id === parseInt(watchBtn.dataset.watchId));
+    if (!item) return;
+    card.dataset.feedPost = '';
+    card.dataset.searchText = getFeedSearchText(item);
+  });
+
   setTimeout(initScrollButtons, 100);
 }
 
