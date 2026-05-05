@@ -43,13 +43,16 @@ header {
     max-width: 450px;
    margin: auto;
     border-radius: 8px;
-    color: white;
+    color: #fff;
     box-sizing: border-box;
 }
 
+#login-heading,
 .login-container h2 {
+    color: #fff;
     margin-top: 0;
     margin-bottom: 25px;
+    font-weight: 700;
 }
 
 input[type="text"], 
@@ -57,11 +60,17 @@ input[type="password"] {
     width: 100%;
     padding: 15px;
     margin-bottom: 20px;
-    background: #333;
+    background: #333;  /*color is too strong and doesn't look good */
     border: none;
     border-radius: 4px;
-    color: white;
+    color: #fff;
     box-sizing: border-box; 
+}
+
+input[type="text"]::placeholder, 
+input[type="password"]::placeholder {
+    color: #b3b3b3;
+    opacity: 1;
 }
 
 .btn-login {
@@ -105,6 +114,10 @@ margin-bottom: 20px;
     text-decoration: none;
 }
 
+.options label {
+    color: #b3b3b3;
+}
+
 .options forgot-password {
    align-items: center !important;
 
@@ -117,11 +130,11 @@ input[type="checkbox"] {
 
 .signup {
     margin-top: 40px;
-    color: #737373;
+    color: #b3b3b3;
 }
 
 .signup a {
-    color: white;
+    color: #fff;
     text-decoration: none;
 }
 
@@ -138,12 +151,12 @@ input[type="checkbox"] {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: #ffff;
+    color: #fff;
     font-size: 2rem;
     margin-bottom: 20px;
 }
     h1.login-heading{
-    color: white !important;
+    color: #fff !important;
 
 }
 

@@ -76,6 +76,13 @@ body {
     border-radius: 4px;
 }
 
+.persona-name {
+    color: white;
+    font-size: 13px;
+    font-family: 'Segoe UI', sans-serif;
+    margin-left: 6px;
+}
+
 .caret {
     color: white;
     font-size: 10px;

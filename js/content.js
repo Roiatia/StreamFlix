@@ -53,14 +53,60 @@ const genreColors = {
   "documentary": "#2c6e49",
 };
 
-const homeRows = [
-  { label: "Trending Now",          filter: c => c.year >= 2020 && c.type !== "Game", trending: true },
-  { label: "Popular on StreamFlix", filter: c => [1, 2, 4, 5, 8, 15, 16, 17, 18, 26, 27].includes(c.id) },
-  { label: "TV Shows",              filter: c => c.type === "TV Show" },
-  { label: "Movies",                filter: c => c.type === "Movie" },
-  { label: "Thriller & Crime",      filter: c => ["thriller", "crime"].includes(c.genre) && c.type !== "Game" },
-  { label: "Sci-Fi & Fantasy",      filter: c => ["sci-fi", "fantasy"].includes(c.genre) && c.type !== "Game" },
-];
+const popularIds = [1, 2, 4, 5, 8, 15, 16, 17, 18, 26, 27];
+
+function buildPersonaFeedRows() {
+  const state = getPersonaState();
+  const rows = [];
+
+  const watchedItems = state.watchedIds
+    .map(id => streamflixContent.find(c => c.id === id))
+    .filter(Boolean);
+
+  if (watchedItems.length > 0) {
+    rows.push({ label: "Continue Watching", items: watchedItems });
+  }
+
+  const seenGenres = new Set();
+  watchedItems.forEach(watched => {
+    if (seenGenres.size >= 2 || seenGenres.has(watched.genre)) return;
+    const recs = streamflixContent.filter(
+      c => c.genre === watched.genre && !state.watchedIds.includes(c.id)
+    );
+    if (recs.length >= 2) {
+      seenGenres.add(watched.genre);
+      rows.push({ label: `Because you watched ${watched.title}`, items: recs });
+    }
+  });
+
+  if (state.myListIds.length > 0) {
+    rows.push({
+      label: "My List",
+      items: state.myListIds.map(id => streamflixContent.find(c => c.id === id)).filter(Boolean),
+    });
+  }
+
+  rows.push({
+    label: "Trending Now",
+    items: streamflixContent.filter(c => c.year >= 2020 && c.type !== "Game"),
+    trending: true,
+  });
+
+  rows.push({
+    label: "Popular on StreamFlix",
+    items: streamflixContent.filter(c => popularIds.includes(c.id)),
+  });
+
+  rows.push({ label: "TV Shows", items: streamflixContent.filter(c => c.type === "TV Show") });
+  rows.push({ label: "Movies",   items: streamflixContent.filter(c => c.type === "Movie") });
+
+  if (watchedItems.length === 0) {
+    rows.push({ label: "Thriller & Crime", items: streamflixContent.filter(c => ["thriller", "crime"].includes(c.genre) && c.type !== "Game") });
+    rows.push({ label: "Sci-Fi & Fantasy", items: streamflixContent.filter(c => ["sci-fi", "fantasy"].includes(c.genre) && c.type !== "Game") });
+  }
+
+  return rows;
+}
 
 const baseLikeCounts = {
    1: 847,  2: 923,  3: 412,  4: 784,  5: 905,
@@ -70,6 +116,21 @@ const baseLikeCounts = {
   21: 276, 22: 445, 23: 334, 24: 291, 25: 612,
   26: 478, 27: 723, 28: 389, 29: 567, 30: 298,
   31: 712, 32: 634, 33: 791, 34: 445, 35: 878, 36: 834,
+};
+
+const personaProfiles = {
+  roi: {
+    name: 'Roi',
+    avatar: 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png',
+  },
+  dan: {
+    name: 'Dan',
+    avatar: 'data:image/png;base64,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',
+  },
+  guest: {
+    name: 'Guest',
+    avatar: 'https://ih1.redbubble.net/image.618427277.3222/flat,1000x1000,075,f.u2.jpg',
+  },
 };
 
 // ----- Persona state -----
@@ -125,6 +186,10 @@ function markContentWatched(id) {
   if (!state.watchedIds.includes(id)) {
     state.watchedIds.push(id);
     savePersonaState(state);
+    if (document.querySelector('.nav-item.active')?.dataset.category === 'home') {
+      renderHomeContent();
+      return;
+    }
   }
   updateWatchButtons(id);
 }
@@ -211,6 +276,53 @@ function escapeHtml(str) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+function getFeedSearchText(item) {
+  return `${item.title} ${item.postText || item.description || ''}`.toLowerCase();
+}
+
+function filterFeedPosts(query) {
+  const container = document.getElementById("contentRows");
+  let visibleCount = 0;
+
+  container.querySelector('.trending-row').style.display = 'none';
+
+  container.querySelectorAll('.content-row:not(.trending-row)').forEach(row => {
+    const cards = row.querySelectorAll('[data-feed-post]');
+    let rowVisible = false;
+    cards.forEach(card => {
+      const matches = (card.dataset.searchText || '').includes(query);
+      card.style.display = matches ? '' : 'none';
+      if (matches) { visibleCount++; rowVisible = true; }
+    });
+    row.style.display = rowVisible ? '' : 'none';
+  });
+
+  let msg = container.querySelector('.feed-no-results');
+  if (visibleCount === 0) {
+    if (!msg) {
+      msg = document.createElement('div');
+      msg.className = 'feed-no-results empty-state';
+      container.appendChild(msg);
+    }
+    msg.innerHTML = `<p>No feed posts found for "<strong>${escapeHtml(query)}</strong>".</p>`;
+    msg.style.display = '';
+  } else if (msg) {
+    msg.style.display = 'none';
+  }
+}
+
+function resetFeedSearch() {
+  const container = document.getElementById("contentRows");
+  const trending = container.querySelector('.trending-row');
+  if (trending) trending.style.display = '';
+  container.querySelectorAll('.content-row:not(.trending-row)').forEach(row => {
+    row.style.display = '';
+    row.querySelectorAll('[data-feed-post]').forEach(card => { card.style.display = ''; });
+  });
+  const msg = container.querySelector('.feed-no-results');
+  if (msg) msg.style.display = 'none';
 }
 
 function renderTrendingCard(item, rank) {
@@ -315,13 +427,34 @@ function initScrollButtons() {
 
 function renderHomeContent() {
   const container = document.getElementById("contentRows");
-  container.innerHTML = homeRows.map(row => {
-    const items = streamflixContent.filter(row.filter);
-    if (!items.length) return "";
-    return renderRow(row.label, items, row.trending);
-  }).join("");
+  container.innerHTML = buildPersonaFeedRows()
+    .filter(row => row.items.length > 0)
+    .map(row => renderRow(row.label, row.items, row.trending))
+    .join("");
+
+  container.querySelectorAll('.content-card').forEach(card => {
+    const watchBtn = card.querySelector('[data-watch-id]');
+    if (!watchBtn) return;
+    const item = streamflixContent.find(c => c.id === parseInt(watchBtn.dataset.watchId));
+    if (!item) return;
+    card.dataset.feedPost = '';
+    card.dataset.searchText = getFeedSearchText(item);
+  });
+
   setTimeout(initScrollButtons, 100);
 }
 
+function initNavPersona() {
+  const id = getCurrentPersonaId();
+  const profile = personaProfiles[id] || personaProfiles.guest;
+  const avatarEl = document.getElementById('navAvatar');
+  const nameEl   = document.getElementById('navPersonaName');
+  if (avatarEl) avatarEl.src = profile.avatar;
+  if (nameEl)   nameEl.textContent = profile.name;
+}
+
 window.addEventListener('resize', initScrollButtons);
-document.addEventListener("DOMContentLoaded", renderHomeContent);
+document.addEventListener("DOMContentLoaded", () => {
+  initNavPersona();
+  renderHomeContent();
+});
