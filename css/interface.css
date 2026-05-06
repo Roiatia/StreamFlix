@@ -173,8 +173,8 @@ body {
 /* ===== CAROUSEL BUTTONS ===== */
 .scroll-btn {
     position: absolute;
-    top: 0;
-    height: 250px;
+    top: 130px;
+    height: 50px;
     width: 50px;
     background: rgba(0, 0, 0, 0.6);
     border: none;
@@ -480,4 +480,61 @@ body {
 /* ===== UTILITY ===== */
 .hidden {
     display: none !important;
+}
+
+/* ===== ALPHABET FILTER ===== */
+.alphabet-filter {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 24px 4% 0;
+    margin-bottom: 28px;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.alpha-btn {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #666;
+    padding: 10px 0 8px;
+    width: calc(100% / 9);
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Segoe UI', sans-serif;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: color 0.15s, border-color 0.15s;
+    margin-bottom: -1px;
+}
+
+.alpha-btn:hover {
+    color: #ccc;
+}
+
+.alpha-btn.active {
+    color: white;
+    border-bottom-color: #e50914;
+}
+
+/* ===== EMPTY CATALOG STATE ===== */
+.catalog-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #888;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 1rem;
+}
+
+.catalog-empty strong {
+    color: #e5e5e5;
+}
+
+@media (max-width: 600px) {
+    .alpha-btn {
+        width: calc(100% / 7);
+        font-size: 13px;
+        padding: 8px 0 6px;
+    }
 }

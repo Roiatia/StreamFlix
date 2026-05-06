@@ -53,7 +53,7 @@ const genreColors = {
   "documentary": "#2c6e49",
 };
 
-const popularIds = [1, 2, 4, 5, 8, 15, 16, 17, 18, 26, 27];
+const popularIds = [1, 2, 3, 4, 8, 15, 16, 17, 18, 26, 27];
 
 function buildPersonaFeedRows() {
   const state = getPersonaState();
