@@ -1,28 +1,53 @@
+# StreamFlix - Streaming UI Clone
 
+StreamFlix is a frontend web project inspired by modern streaming platforms. It recreates the core user journey of a streaming service, from login and profile selection to a browsable content dashboard with movie and TV show cards.
 
-# StreamFlix - UI/UX Web Clone 🎬
+This project was built as part of a college web development assignment, with a focus on polished UI, responsive layout, and a clean Netflix-style viewing experience using a custom brand identity.
 
-A pixel-perfect frontend clone of a popular streaming service interface, created as an educational project for college. This project focuses on recreating the user journey from login to profile selection and the main content dashboard.
+## Screenshots
 
-## 🚀 Project Overview
+| Login Screen | Profile Selection |
+| --- | --- |
+| ![StreamFlix login screen](images/screenshots/streamflix-login.png) | ![StreamFlix profile selection screen](images/screenshots/streamflix-profiles.png) |
 
-The goal of this project was to practice modern web development techniques, specifically focusing on **HTML5**, **CSS3**, and **Responsive Design**. The project mimics the "Netflix" aesthetic while using the custom brand identity: **StreamFlix**.
+| Home Dashboard | Personalized Recommendations |
+| --- | --- |
+| ![StreamFlix home dashboard](images/screenshots/streamflix-home.png) | ![StreamFlix recommendations page](images/screenshots/streamflix-recommendations.png) |
 
-### Key Features
-* **Authentication Screen:** A realistic login page with custom input styling, a "Try with Code" divider, and a translucent background.
-* **Profile Selection:** An interactive "Who's Watching?" screen with hover animations and profile-specific styling.
-* **Main Interface:** A functional navigation bar (Navbar) featuring a transparent-to-black gradient, category links, and a user profile menu.
-* **Responsive Layout:** Built using Flexbox and Grid to ensure alignment across different screen sizes.
+## Project Overview
 
-## 🛠️ Technologies Used
+The goal of this project was to practice modern frontend development by recreating a realistic streaming-service interface. The design emphasizes dark visual styling, bold red branding, content-heavy layouts, and familiar streaming-product interaction patterns.
 
-* **HTML5:** Semantic structure for better accessibility and SEO.
-* **CSS3:** * Flexbox for layout alignment.
-    * CSS Transitions for smooth hover effects.
-    * Custom Gradients and Translucency (RGBA).
-    * Pseudo-elements (`::before`/`::after`) for UI components like dividers.
-* **Google Fonts:** Integrated 'Segoe UI' and clean sans-serif typography.
+## Key Features
 
-**made as part of the first assignment in web development course** 
+- **Authentication Screen:** Login page with styled inputs, a primary call-to-action, secondary code login option, and a cinematic background.
+- **Profile Selection:** "Who's Watching?" screen with multiple profiles, avatar tiles, and a manage profiles action.
+- **Main Dashboard:** Navigation bar, profile menu, content rows, ranked trending section, poster cards, watch buttons, and like counters.
+- **Personalized Page:** Continue-watching and recommendation sections based on selected content.
+- **Responsive Layout:** Built with CSS layout techniques to keep the interface aligned across different screen sizes.
 
-**All trademarks, logos, and brand identities displayed in this project are the property of Netflix. Any resemblance is for educational and portfolio purposes only, as part of a college web development assignment.**
+## Technologies Used
+
+- **HTML5** for semantic page structure.
+- **CSS3** for layout, gradients, hover states, transitions, and responsive styling.
+- **JavaScript** for interactive navigation and dynamic content behavior.
+- **Custom media assets** for posters, backgrounds, icons, and screenshots.
+
+## Project Structure
+
+```text
+Netflix/
++-- css/
++-- html/
++-- images/
+|   +-- screenshots/
++-- js/
++-- index.html
++-- interface.html
++-- UserScreen.html
++-- README.md
+```
+
+## Disclaimer
+
+This project is for educational and portfolio purposes only. All trademarks, logos, and brand identities related to Netflix remain the property of their respective owners.
