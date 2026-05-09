@@ -20,32 +20,43 @@ The goal of this project was to practice modern frontend development by recreati
 
 ## Key Features
 
+- **Login Validation:** Client-side form validation on the login page using vanilla ES6+ JavaScript. Checks that the email field matches a valid format and that the password meets a minimum length requirement. Error messages appear inline below each field and clear as the user types. Submission is blocked with `event.preventDefault()` until all fields pass, then redirects to the profile selection screen.
 - **Authentication Screen:** Login page with styled inputs, a primary call-to-action, secondary code login option, and a cinematic background.
-- **Profile Selection:** "Who's Watching?" screen with multiple profiles, avatar tiles, and a manage profiles action.
+- **Profile Selection:** "Who's Watching?" screen with multiple user profiles, avatar tiles, and a manage profiles action.
 - **Main Dashboard:** Navigation bar, profile menu, content rows, ranked trending section, poster cards, watch buttons, and like counters.
-- **Personalized Page:** Continue-watching and recommendation sections based on selected content.
-- **Responsive Layout:** Built with CSS layout techniques to keep the interface aligned across different screen sizes.
+- **Personalized Feed:** Continue-watching and genre-based recommendation rows driven by per-profile state stored in `localStorage`.
+- **Search:** Live search bar that filters the home feed inline or displays a full results overlay on other pages.
+- **My List:** Save and remove titles per profile, with a dedicated My List page.
+- **Responsive Layout:** Built with Bootstrap 5 and CSS to keep the interface aligned across different screen sizes.
 
 ## Technologies Used
 
 - **HTML5** for semantic page structure.
-- **CSS3** for layout, gradients, hover states, transitions, and responsive styling.
-- **JavaScript** for interactive navigation and dynamic content behavior.
+- **CSS3** for custom dark-theme styling, gradients, hover states, and transitions.
+- **Bootstrap 5.3** for responsive layout utilities, button styles, form components, and spacing — reducing the amount of hand-written CSS needed for common patterns.
+- **JavaScript (ES6+)** for form validation, dynamic content rendering, localStorage state management, search, and navigation.
 - **Custom media assets** for posters, backgrounds, icons, and screenshots.
 
 ## Project Structure
 
 ```text
-Netflix/
-+-- css/
-+-- html/
-+-- images/
-|   +-- screenshots/
-+-- js/
-+-- index.html
-+-- interface.html
-+-- UserScreen.html
-+-- README.md
+StreamFlix/
+├── css/
+│   ├── LoginPage.css
+│   ├── users.css
+│   └── interface.css
+├── images/
+│   └── screenshots/
+├── content-images/
+├── js/
+│   ├── login.js
+│   ├── content.js
+│   ├── nav.js
+│   └── search.js
+├── index.html
+├── UserScreen.html
+├── interface.html
+└── README.md
 ```
 
 ## Disclaimer
