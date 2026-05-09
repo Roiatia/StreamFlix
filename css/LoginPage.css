@@ -55,19 +55,41 @@ header {
     font-weight: 700;
 }
 
-input[type="text"], 
+input[type="text"],
+input[type="email"],
 input[type="password"] {
     width: 100%;
     padding: 15px;
-    margin-bottom: 20px;
-    background: #333;  /*color is too strong and doesn't look good */
-    border: none;
+    margin-bottom: 4px;
+    background: #333;
+    border: 2px solid transparent;
     border-radius: 4px;
     color: #fff;
-    box-sizing: border-box; 
+    box-sizing: border-box;
+    transition: border-color 0.2s;
 }
 
-input[type="text"]::placeholder, 
+input[type="text"]::placeholder,
+input[type="email"]::placeholder { /* keep rule below in sync */ }
+
+.field-group {
+    margin-bottom: 16px;
+}
+
+.error-msg {
+    display: block;
+    color: #ff6b6b;
+    font-size: 0.78rem;
+    min-height: 1.1em;
+    margin-top: 2px;
+}
+
+input.input-error {
+    border-color: #E50914;
+}
+
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
 input[type="password"]::placeholder {
     color: #b3b3b3;
     opacity: 1;

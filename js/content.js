@@ -37,21 +37,6 @@ const streamflixContent = [
   { id: 36, title: "GTA V",                        type: "Game",    genre: "action",    year: 2013, rating: "M",     language: "English", description: "Three criminals pull off heists across the sprawling open world of Los Santos.", img: "../content-images/GTAV.jpg" },
 ];
 
-//temp cover colors - to be deleted !!
-const genreColors = {
-  "sci-fi":      "#1a6bb5",
-  "thriller":    "#8b1a1a",
-  "drama":       "#5b2d8e",
-  "crime":       "#4a4a4a",
-  "action":      "#c0392b",
-  "horror":      "#0d0d1a",
-  "comedy":      "#c87f0a",
-  "romance":     "#9c1560",
-  "animation":   "#0e7862",
-  "fantasy":     "#1a5c35",
-  "adventure":   "#0a5c6e",
-  "documentary": "#2c6e49",
-};
 
 const popularIds = [1, 2, 4, 5, 8, 15, 16, 17, 18, 26, 27];
 
@@ -326,11 +311,10 @@ function resetFeedSearch() {
 }
 
 function renderTrendingCard(item, rank) {
-  const color = genreColors[item.genre] || "#333";
   const inList = isInMyList(item.id);
   const thumbStyle = item.img
     ? `background-image: url('${item.img}'); background-size: cover; background-position: center top;`
-    : `background: linear-gradient(135deg, ${color} 0%, #111 100%);`;
+    : 'background: #1a1a1a;';
   return `
     <div class="trending-item">
       <span class="trending-number">${rank}</span>
@@ -355,11 +339,10 @@ function renderTrendingCard(item, rank) {
 }
 
 function renderCard(item) {
-  const color = genreColors[item.genre] || "#333";
   const inList = isInMyList(item.id);
   const thumbStyle = item.img
     ? `background-image: url('${item.img}'); background-size: cover; background-position: center top;`
-    : `background: linear-gradient(135deg, ${color} 0%, #111 100%);`;
+    : 'background: #1a1a1a;';
   return `
     <div class="content-card" title="${escapeHtml(item.description)}">
       <div class="card-thumb" style="${thumbStyle}">
