@@ -1,15 +1,20 @@
+// called when a nav link is clicked — updates the active style and renders the right page
 function setActiveNav(el) {
+  // remove 'active' from all nav items, then add it only to the clicked one
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   el.classList.add('active');
 
+  // close the search bar if it's open
   if (typeof closeSearch === 'function' && searchOpen) closeSearch();
 
-  document.getElementById("searchOverlay").classList.add("hidden");
-  document.getElementById("contentRows").classList.remove("hidden");
+  // make sure the overlay is hidden and the main content is visible
+  document.getElementById('searchOverlay').classList.add('hidden');
+  document.getElementById('contentRows').classList.remove('hidden');
 
   renderCategory(el.dataset.category);
 }
 
+// routes the category string to the correct render function
 function renderCategory(category) {
   switch (category) {
     case 'home':       renderHomeContent();   break;
@@ -22,83 +27,84 @@ function renderCategory(category) {
   }
 }
 
+// shared helper — sets the page HTML and initializes the scroll buttons after the DOM updates
+function setPageContent(html) {
+  document.getElementById('contentRows').innerHTML = html;
+  setTimeout(initScrollButtons, 100);
+}
+
+// returns a hero banner HTML string for the top of each category page
 function categoryHero(title) {
   return `<div class="category-hero"><h2>${title}</h2></div>`;
 }
 
+// capitalizes the first letter of a string (used for genre labels)
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// groups a list of items by genre and renders a separate row for each one
 function genreRows(items) {
-  const genres = [...new Set(items.map(c => c.genre))];
-  return genres.map(genre =>
-    renderRow(capitalize(genre), items.filter(c => c.genre === genre))
-  ).join("");
+  return [...new Set(items.map(c => c.genre))]  // get unique genres using a Set
+    .map(genre => renderRow(capitalize(genre), items.filter(c => c.genre === genre)))
+    .join('');
 }
 
 function renderTVShows() {
-  const shows = streamflixContent.filter(c => c.type === "TV Show");
-  document.getElementById("contentRows").innerHTML =
-    categoryHero("TV Shows") + genreRows(shows);
-  setTimeout(initScrollButtons, 100);
+  const shows = streamflixContent.filter(c => c.type === 'TV Show');
+  setPageContent(categoryHero('TV Shows') + genreRows(shows));
 }
 
 function renderMovies() {
-  const movies = streamflixContent.filter(c => c.type === "Movie");
-  document.getElementById("contentRows").innerHTML =
-    categoryHero("Movies") + genreRows(movies);
-  setTimeout(initScrollButtons, 100);
+  const movies = streamflixContent.filter(c => c.type === 'Movie');
+  setPageContent(categoryHero('Movies') + genreRows(movies));
 }
 
 function renderGames() {
-  const games = streamflixContent.filter(c => c.type === "Game");
-  document.getElementById("contentRows").innerHTML =
-    categoryHero("Games") + renderRow("All Games", games);
-  setTimeout(initScrollButtons, 100);
+  const games = streamflixContent.filter(c => c.type === 'Game');
+  setPageContent(categoryHero('Games') + renderRow('All Games', games));
 }
 
 function renderNewAndPopular() {
+  // split into two groups: very recent (2022+) and somewhat recent (2019–2021)
   const latest = streamflixContent
-    .filter(c => c.year >= 2022 && c.type !== "Game")
+    .filter(c => c.year >= 2022 && c.type !== 'Game')
     .sort((a, b) => b.year - a.year);
   const recent = streamflixContent
-    .filter(c => c.year >= 2019 && c.year < 2022 && c.type !== "Game")
+    .filter(c => c.year >= 2019 && c.year < 2022 && c.type !== 'Game')
     .sort((a, b) => b.year - a.year);
 
-  document.getElementById("contentRows").innerHTML =
-    categoryHero("New &amp; Popular") +
-    (latest.length ? renderRow("Latest Releases", latest) : "") +
-    renderRow("Recently Added", recent);
-  setTimeout(initScrollButtons, 100);
+  setPageContent(
+    categoryHero('New &amp; Popular') +
+    (latest.length ? renderRow('Latest Releases', latest) : '') +
+    renderRow('Recently Added', recent)
+  );
 }
 
 function renderMyList() {
-  const ids = getMyList();
-  const container = document.getElementById("contentRows");
+  const ids = getPersonaState().myListIds;
 
+  // show an empty state message if the user hasn't added anything yet
   if (ids.length === 0) {
-    container.innerHTML = `
-      ${categoryHero("My List")}
+    setPageContent(`
+      ${categoryHero('My List')}
       <div class="empty-state">
         <p>Your list is empty.</p>
         <p class="empty-sub">Browse and click <strong>+</strong> on any title to save it here.</p>
-      </div>`;
+      </div>`);
     return;
   }
 
+  // map the saved IDs back to the actual content objects
   const items = ids.map(id => streamflixContent.find(c => c.id === id)).filter(Boolean);
-  container.innerHTML =
-    categoryHero("My List") + renderRow("Saved Titles", items);
-  setTimeout(initScrollButtons, 100);
+  setPageContent(categoryHero('My List') + renderRow('Saved Titles', items));
 }
 
 function renderByLanguage() {
-  const languages = [...new Set(streamflixContent.map(c => c.language))].sort();
-  document.getElementById("contentRows").innerHTML =
-    categoryHero("Browse by Languages") +
-    languages.map(lang =>
-      renderRow(escapeHtml(lang), streamflixContent.filter(c => c.language === lang))
-    ).join("");
-  setTimeout(initScrollButtons, 100);
-}
-
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+  // collect unique languages, sort alphabetically, then build a row for each
+  const rows = [...new Set(streamflixContent.map(c => c.language))]
+    .sort()
+    .map(lang => renderRow(escapeHtml(lang), streamflixContent.filter(c => c.language === lang)))
+    .join('');
+  setPageContent(categoryHero('Browse by Languages') + rows);
 }

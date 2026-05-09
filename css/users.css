@@ -1,18 +1,8 @@
 body {
-    margin: 0;
-    padding: 0;
-    background-color: #141414; 
+    background-color: #141414;
     color: white;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     overflow: hidden;
-}
-
-.profiles-container {
-    text-align: center;
 }
 
 h1 {
@@ -20,13 +10,6 @@ h1 {
     font-weight: 500;
     margin-bottom: 40px;
     letter-spacing: 1px;
-}
-
-.profiles-list {
-    display: flex;
-    gap: 30px;
-    justify-content: center;
-    margin-bottom: 50px;
 }
 
 .profile {
@@ -63,7 +46,6 @@ h1 {
     color: #808080;
     font-size: 1.2rem;
     display: block;
-    outline: none; 
     transition: color 0.3s;
 }
 
@@ -82,17 +64,9 @@ h1 {
     color: white;
 }
 
+/* keep only the hover color and letter-spacing — Bootstrap handles the rest */
 .manage-profiles {
-    background: transparent;
-    color: #808080;
-    border: 1px solid #808080;
-    padding: 10px 30px;
-    font-size: 1.1rem;
-    text-transform: uppercase;
     letter-spacing: 2px;
-    cursor: pointer;
-    transition: 0.3s;
-    margin-top: 20px;
 }
 
 .manage-profiles:hover {
@@ -100,8 +74,6 @@ h1 {
     border-color: white;
 }
 
-a{
-    text-decoration: none;
+a {
     color: inherit;
-
 }
