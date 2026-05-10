@@ -1,43 +1,86 @@
-# StreamFlix - Streaming UI Clone
+# StreamFlix – Streaming UI Clone
 
-StreamFlix is a frontend web project inspired by modern streaming platforms. It recreates the core user journey of a streaming service, from login and profile selection to a browsable content dashboard with movie and TV show cards.
+A modern streaming-platform frontend inspired by services like Netflix, built as part of a college web development project.
 
-This project was built as part of a college web development assignment, with a focus on polished UI, responsive layout, and a clean Netflix-style viewing experience using a custom brand identity.
+StreamFlix recreates the core streaming experience — from authentication and profile selection to personalized recommendations and dynamic content browsing — using a custom dark-themed brand identity.
 
-## Screenshots
+---
 
-| Login Screen | Profile Selection |
-| --- | --- |
-| ![StreamFlix login screen](images/screenshots/streamflix-login.png) | ![StreamFlix profile selection screen](images/screenshots/streamflix-profiles.png) |
+# Features
 
-| Home Dashboard | Personalized Recommendations |
-| --- | --- |
-| ![StreamFlix home dashboard](images/screenshots/streamflix-home.png) | ![StreamFlix recommendations page](images/screenshots/streamflix-recommendations.png) |
+## Authentication & Login
+- Client-side form validation using Vanilla JavaScript (ES6+)
+- Email format validation with Regex
+- Password length validation
+- Inline error messages
+- Dynamic error clearing while typing
+- Redirect flow after successful login
 
-## Project Overview
+## Profile Selection
+- “Who’s Watching?” style profile screen
+- Multiple user profiles
+- Avatar-based profile cards
+- Manage profiles button
 
-The goal of this project was to practice modern frontend development by recreating a realistic streaming-service interface. The design emphasizes dark visual styling, bold red branding, content-heavy layouts, and familiar streaming-product interaction patterns.
+## Main Dashboard
+- Netflix-inspired interface
+- Hero content sections
+- Trending rows
+- Watch buttons
+- Like counters
+- Smooth hover effects
 
-## Key Features
+## Personalized Experience
+- Continue Watching section
+- Genre-based recommendations
+- Per-profile saved state using `localStorage`
 
-- **Login Validation:** Client-side form validation on the login page using vanilla ES6+ JavaScript. Checks that the email field matches a valid format and that the password meets a minimum length requirement. Error messages appear inline below each field and clear as the user types. Submission is blocked with `event.preventDefault()` until all fields pass, then redirects to the profile selection screen.
-- **Authentication Screen:** Login page with styled inputs, a primary call-to-action, secondary code login option, and a cinematic background.
-- **Profile Selection:** "Who's Watching?" screen with multiple user profiles, avatar tiles, and a manage profiles action.
-- **Main Dashboard:** Navigation bar, profile menu, content rows, ranked trending section, poster cards, watch buttons, and like counters.
-- **Personalized Feed:** Continue-watching and genre-based recommendation rows driven by per-profile state stored in `localStorage`.
-- **Search:** Live search bar that filters the home feed inline or displays a full results overlay on other pages.
-- **My List:** Save and remove titles per profile, with a dedicated My List page.
-- **Responsive Layout:** Built with Bootstrap 5 and CSS to keep the interface aligned across different screen sizes.
+## Search System
+- Live content filtering
+- Search overlay across pages
+- Dynamic search results
 
-## Technologies Used
+## My List
+- Save favorite titles
+- Remove titles dynamically
+- Dedicated My List page
 
-- **HTML5** for semantic page structure.
-- **CSS3** for custom dark-theme styling, gradients, hover states, and transitions.
-- **Bootstrap 5.3** for responsive layout utilities, button styles, form components, and spacing — reducing the amount of hand-written CSS needed for common patterns.
-- **JavaScript (ES6+)** for form validation, dynamic content rendering, localStorage state management, search, and navigation.
-- **Custom media assets** for posters, backgrounds, icons, and screenshots.
+## Responsive Design
+- Built with Bootstrap 5
+- Responsive layouts for multiple screen sizes
+- Optimized spacing and alignment
 
-## Project Structure
+---
+
+# Screenshots
+
+## Login Screen
+![StreamFlix login screen](images/screenshots/streamflix-login.png)
+
+## Profile Selection
+![StreamFlix profile selection screen](images/screenshots/streamflix-profiles.png)
+
+## Home Dashboard
+![StreamFlix home dashboard](images/screenshots/streamflix-home.png)
+
+## Recommendations Feed
+![StreamFlix recommendations page](images/screenshots/streamflix-recommendations.png)
+
+---
+
+# Technologies Used
+
+| Technology | Purpose |
+|---|---|
+| HTML5 | Semantic page structure |
+| CSS3 | Custom styling, animations, gradients |
+| Bootstrap 5.3 | Responsive layout and UI utilities |
+| JavaScript (ES6+) | Validation, search, rendering, state management |
+| localStorage | Profile persistence and saved content |
+
+---
+
+# Project Structure
 
 ```text
 StreamFlix/
@@ -45,20 +88,41 @@ StreamFlix/
 │   ├── LoginPage.css
 │   ├── users.css
 │   └── interface.css
-├── images/
-│   └── screenshots/
-├── content-images/
+│
 ├── js/
 │   ├── login.js
 │   ├── content.js
 │   ├── nav.js
 │   └── search.js
+│
+├── images/
+│   └── screenshots/
+│
+├── content-images/
+│
 ├── index.html
 ├── UserScreen.html
 ├── interface.html
 └── README.md
 ```
 
-## Disclaimer
+---
 
-This project is for educational and portfolio purposes only. All trademarks, logos, and brand identities related to Netflix remain the property of their respective owners.
+# Project Goals
+
+The purpose of this project was to practice:
+- Modern frontend development
+- Responsive UI design
+- DOM manipulation
+- Form validation
+- Dynamic rendering
+- State management using `localStorage`
+- Creating a polished real-world user experience
+
+---
+
+# Disclaimer
+
+This project was created for educational and portfolio purposes only.
+
+All trademarks, streaming references, and brand identities related to Netflix belong to their respective owners.
