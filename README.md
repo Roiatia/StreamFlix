@@ -54,17 +54,13 @@ StreamFlix recreates the core streaming experience — from authentication and p
 
 # Screenshots
 
-## Login Screen
-![StreamFlix login screen](images/screenshots/streamflix-login.png)
+| Login Screen | Profile Selection |
+| --- | --- |
+| ![StreamFlix login screen](images/screenshots/streamflix-login.png) | ![StreamFlix profile selection screen](images/screenshots/streamflix-profiles.png) |
 
-## Profile Selection
-![StreamFlix profile selection screen](images/screenshots/streamflix-profiles.png)
-
-## Home Dashboard
-![StreamFlix home dashboard](images/screenshots/streamflix-home.png)
-
-## Recommendations Feed
-![StreamFlix recommendations page](images/screenshots/streamflix-recommendations.png)
+| Home Dashboard | Recommendations Feed |
+| --- | --- |
+| ![StreamFlix home dashboard](images/screenshots/streamflix-home.png) | ![StreamFlix recommendations page](images/screenshots/streamflix-recommendations.png) |
 
 ---
 
