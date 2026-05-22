@@ -1,0 +1,25 @@
+{
+  "name": "streamflix",
+  "version": "1.0.0",
+  "description": "A modern streaming-platform frontend inspired by services like Netflix, built as part of a college web development project.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Roiatia/StreamFlix.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Roiatia/StreamFlix/issues"
+  },
+  "homepage": "https://github.com/Roiatia/StreamFlix#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
