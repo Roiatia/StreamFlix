@@ -17,15 +17,16 @@
     <div class="login-form">
         <h1 id="login-heading">Login</h1>
 
-        <form id="loginForm" novalidate>
+        <form id="loginForm" method="POST" action="/login" novalidate>
+            <div id="formError" class="error-msg mb-3 text-center"></div>
             <div class="mb-3">
-                <input type="email" id="emailInput" class="form-control"
+                <input type="email" id="emailInput" name="email" class="form-control"
                     placeholder="Email or phone number" autocomplete="email">
                 <span class="error-msg" id="emailError"></span>
             </div>
 
             <div class="mb-3">
-                <input type="password" id="passwordInput" class="form-control"
+                <input type="password" id="passwordInput" name="password" class="form-control"
                     placeholder="Password" autocomplete="current-password">
                 <span class="error-msg" id="passwordError"></span>
             </div>
