@@ -1,14 +1,44 @@
 const express = require('express');
+const crypto  = require('crypto');
 
-const app = express();
+const app  = express();
 const PORT = 3000;
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-// hard-coded valid user (no sessions yet)
+const EMAIL_RE  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const VALID_USER = { email: 'test@example.com', password: '123456' };
 
+// in-memory session store: token strings
+const sessions = new Set();
+
+// read one named cookie from the request header
+function getCookie(req, name) {
+  const header = req.headers.cookie || '';
+  for (const chunk of header.split(';')) {
+    const [k, ...v] = chunk.trim().split('=');
+    if (k === name) return decodeURIComponent(v.join('='));
+  }
+  return null;
+}
+
+// block access to protected routes unless a valid session cookie exists
+function requireAuth(req, res, next) {
+  const token = getCookie(req, 'session');
+  if (token && sessions.has(token)) return next();
+  res.redirect('/');
+}
+
 app.use(express.urlencoded({ extended: false }));
+
+// protected routes must be registered before express.static so static
+// can't serve these files directly to unauthenticated requests
+app.get('/UserScreen.html', requireAuth, (req, res) => {
+  res.sendFile('UserScreen.html', { root: '.' });
+});
+app.get('/interface.html', requireAuth, (req, res) => {
+  res.sendFile('interface.html', { root: '.' });
+});
+
+// everything else (css, js, images …) served as-is
 app.use(express.static('.'));
 
 app.get('/', (req, res) => {
@@ -33,12 +63,22 @@ app.post('/login', (req, res) => {
     return res.redirect(`/?passwordError=${encodeURIComponent('Password must be at least 6 characters.')}`);
   }
 
-  // format is valid — now check credentials
   if (email !== VALID_USER.email || password !== VALID_USER.password) {
     return res.redirect(`/?formError=${encodeURIComponent('Invalid email or password.')}`);
   }
 
+  // credentials valid — issue a session token and store it in a cookie
+  const token = crypto.randomBytes(32).toString('hex');
+  sessions.add(token);
+  res.cookie('session', token, { httpOnly: true });
   res.redirect('/UserScreen.html');
+});
+
+app.get('/logout', (req, res) => {
+  const token = getCookie(req, 'session');
+  if (token) sessions.delete(token);
+  res.clearCookie('session');
+  res.redirect('/');
 });
 
 app.listen(PORT, () => {
