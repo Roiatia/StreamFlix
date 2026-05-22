@@ -7,6 +7,7 @@ const emailInput    = document.getElementById('emailInput');
 const passwordInput = document.getElementById('passwordInput');
 const emailError    = document.getElementById('emailError');
 const passwordError = document.getElementById('passwordError');
+const formError     = document.getElementById('formError');
 
 // highlight the field in red and show the error message below it
 function showError(input, msgEl, message) {
@@ -27,6 +28,7 @@ function validate() {
   // reset any previous errors before re-validating
   clearError(emailInput, emailError);
   clearError(passwordInput, passwordError);
+  formError.textContent = '';
 
   const email    = emailInput.value.trim();
   const password = passwordInput.value;
@@ -52,15 +54,24 @@ function validate() {
   return valid;
 }
 
-// listen for form submission — preventDefault stops the page from reloading
+// if the server redirected back with an error, surface it in the form
+const params = new URLSearchParams(window.location.search);
+const emailErr = params.get('emailError');
+const passErr  = params.get('passwordError');
+const credErr  = params.get('formError');
+
+if (emailErr) showError(emailInput, emailError, emailErr);
+if (passErr)  showError(passwordInput, passwordError, passErr);
+if (credErr)  formError.textContent = credErr;
+
+// block form submission only if client-side validation fails;
+// if it passes, the browser POSTs the form to /login naturally
 form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  // only redirect if all fields are valid
-  if (validate()) {
-    window.location.href = 'UserScreen.html';
+  if (!validate()) {
+    e.preventDefault();
   }
 });
 
 // clear each field's error as soon as the user starts typing in it
-emailInput.addEventListener('input', () => clearError(emailInput, emailError));
+emailInput.addEventListener('input',    () => clearError(emailInput, emailError));
 passwordInput.addEventListener('input', () => clearError(passwordInput, passwordError));
