@@ -89,6 +89,21 @@ body {
     margin-left: 4px;
 }
 
+.logout-link {
+    color: #ccc;
+    font-size: 13px;
+    font-family: 'Segoe UI', sans-serif;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    padding: 4px 12px;
+    border-radius: 3px;
+    transition: background 0.2s, color 0.2s;
+}
+.logout-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
 /* ===== SEARCH ===== */
 .search-container {
     display: flex;
