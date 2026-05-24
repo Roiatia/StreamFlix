@@ -1,37 +1,10 @@
-// TODO(partner): replace this local data with GET /api/content?persona=...
-let streamflixContent = [
-  { id: 1, title: 'Stranger Things', type: 'TV Show', genre: 'sci-fi', year: 2016, rating: 'TV-14', language: 'English', description: 'A group of kids uncover supernatural mysteries in their small town.', img: '/content-images/StrangerThings.png' },
-  { id: 2, title: 'Squid Game', type: 'TV Show', genre: 'thriller', year: 2021, rating: 'TV-MA', language: 'Korean', description: "Desperate players compete in deadly children's games for a huge cash prize.", img: '/content-images/squidGames.jpg' },
-  { id: 15, title: 'Inception', type: 'Movie', genre: 'sci-fi', year: 2010, rating: 'PG-13', language: 'English', description: 'A thief enters dreams to steal secrets from deep within the subconscious.', img: '/content-images/Inception.jpg' },
-  { id: 17, title: 'The Dark Knight', type: 'Movie', genre: 'action', year: 2008, rating: 'PG-13', language: 'English', description: 'Batman faces his greatest challenge when the Joker unleashes chaos on Gotham.', img: '/content-images/TheDarkKnight.jpg' },
-  { id: 34, title: 'Among Us', type: 'Game', genre: 'comedy', year: 2018, rating: 'E', language: 'English', description: 'Work together to complete tasks on a spaceship, but watch out for the impostors.', img: '/content-images/AmongUs.jpg' }
-];
-
-let popularIds = [1, 2, 15, 17];
-
-let baseLikeCounts = {
-  1: 847,
-  2: 923,
-  15: 892,
-  17: 967,
-  34: 445
-};
+// populated from /api/content on load
+let streamflixContent = [];
+let popularIds        = [];
+let baseLikeCounts    = {};
 
 // populated from /api/personas on load — keyed by persona id
-const personaProfiles = {
-  roi: {
-    name: 'Roi',
-    avatar: 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'
-  },
-  dan: {
-    name: 'Dan',
-    avatar: 'https://ih1.redbubble.net/image.618427277.3222/flat,1000x1000,075,f.u2.jpg'
-  },
-  guest: {
-    name: 'Guest',
-    avatar: 'https://ih1.redbubble.net/image.618427277.3222/flat,1000x1000,075,f.u2.jpg'
-  }
-};
+const personaProfiles = {};
 
 // ----- Persona state -----
 // each profile stores its own watched/liked/list data in localStorage
@@ -409,9 +382,21 @@ function initNavPersona() {
 window.addEventListener('resize', initScrollButtons);
 
 document.addEventListener('DOMContentLoaded', () => {
-  // TODO(partner): fetch content and personas from the server here
-  initNavPersona();
-  renderHomeContent();
+  // fetch content and personas in parallel, then render once both arrive
+  Promise.all([
+    fetch(`/api/content?persona=${getCurrentPersonaId()}`).then(r => r.json()),
+    fetch('/api/personas').then(r => r.json()),
+  ]).then(([contentData, personasData]) => {
+    streamflixContent = contentData.items;
+    popularIds        = contentData.popularIds;
+    baseLikeCounts    = contentData.baseLikeCounts;
+
+    // build the id → {name, avatar} lookup from the personas array
+    personasData.forEach(p => { personaProfiles[p.id] = { name: p.name, avatar: p.avatar }; });
+
+    initNavPersona();
+    renderHomeContent();
+  });
 });
 
     // build the id → {name, avatar} lookup from the personas array

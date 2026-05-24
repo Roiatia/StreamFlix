@@ -1,4 +1,4 @@
-// build a clickable card for one persona
+// build a persona card element using DOM methods (avoids innerHTML with user data)
 function createCard(persona) {
     const a = document.createElement('a');
     a.href = `interface.html?persona=${persona.id}`;
