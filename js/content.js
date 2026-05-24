@@ -1,4 +1,4 @@
-// TODO(partner): replace this local data with GET /api/content?persona=...
+// TODO: replace this local data with GET /api/content?persona=...
 let streamflixContent = [
   { id: 1, title: 'Stranger Things', type: 'TV Show', genre: 'sci-fi', year: 2016, rating: 'TV-14', language: 'English', description: 'A group of kids uncover supernatural mysteries in their small town.', img: '/content-images/StrangerThings.png' },
   { id: 2, title: 'Squid Game', type: 'TV Show', genre: 'thriller', year: 2021, rating: 'TV-MA', language: 'Korean', description: "Desperate players compete in deadly children's games for a huge cash prize.", img: '/content-images/squidGames.jpg' },
@@ -409,7 +409,7 @@ function initNavPersona() {
 window.addEventListener('resize', initScrollButtons);
 
 document.addEventListener('DOMContentLoaded', () => {
-  // TODO(partner): fetch content and personas from the server here
+  // TODO: fetch content and personas from the server here
   initNavPersona();
   renderHomeContent();
 });

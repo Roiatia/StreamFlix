@@ -28,26 +28,20 @@ function createCard(persona) {
 const list   = document.getElementById('profiles-list');
 const addBtn = list.querySelector('.add-btn');
 
-// TODO(partner): replace this local list with GET /api/personas
-const localPersonas = [
-    {
-        id: 'roi',
-        name: 'Roi',
-        avatar: 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'
-    },
-    {
-        id: 'dan',
-        name: 'Dan',
-        avatar: 'https://ih1.redbubble.net/image.618427277.3222/flat,1000x1000,075,f.u2.jpg'
-    },
-    {
-        id: 'guest',
-        name: 'Guest',
-        avatar: 'https://ih1.redbubble.net/image.618427277.3222/flat,1000x1000,075,f.u2.jpg'
-    }
-];
+async function loadPersonas() {
+    const res = await fetch('/api/personas');
 
-localPersonas.forEach(p => list.insertBefore(createCard(p), addBtn));
+    if (!res.ok) {
+        throw new Error('Failed to load personas.');
+    }
+
+    const personas = await res.json();
+    personas.forEach(p => list.insertBefore(createCard(p), addBtn));
+}
+
+loadPersonas().catch(err => {
+    console.error(err);
+});
 
 const modal     = new bootstrap.Modal(document.getElementById('addProfileModal'));
 const nameInput = document.getElementById('new-persona-name');
@@ -71,7 +65,7 @@ function submitNewPersona() {
         return;
     }
 
-    // TODO(partner): replace this local add with POST /api/personas
+    // TODO: replace this local add with POST /api/personas
     const id = name.toLowerCase().replace(/\s+/g, '-');
     const newPersona = {
         id,
