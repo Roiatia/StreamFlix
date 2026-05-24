@@ -398,3 +398,5 @@ document.addEventListener('DOMContentLoaded', () => {
     renderHomeContent();
   });
 });
+
+    // build the id → {name, avatar} lookup from the personas array

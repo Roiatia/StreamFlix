@@ -28,21 +28,33 @@ function createCard(persona) {
 const list   = document.getElementById('profiles-list');
 const addBtn = list.querySelector('.add-btn');
 
-// fetch all personas from the server and render them on page load
-fetch('/api/personas')
-    .then(res => res.json())
-    .then(personas => {
-        personas.forEach(p => list.insertBefore(createCard(p), addBtn));
-    });
+// TODO(partner): replace this local list with GET /api/personas
+const localPersonas = [
+    {
+        id: 'roi',
+        name: 'Roi',
+        avatar: 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'
+    },
+    {
+        id: 'dan',
+        name: 'Dan',
+        avatar: 'https://ih1.redbubble.net/image.618427277.3222/flat,1000x1000,075,f.u2.jpg'
+    },
+    {
+        id: 'guest',
+        name: 'Guest',
+        avatar: 'https://ih1.redbubble.net/image.618427277.3222/flat,1000x1000,075,f.u2.jpg'
+    }
+];
 
-// --- Add Profile modal ---
+localPersonas.forEach(p => list.insertBefore(createCard(p), addBtn));
 
 const modal     = new bootstrap.Modal(document.getElementById('addProfileModal'));
 const nameInput = document.getElementById('new-persona-name');
 const errorDiv  = document.getElementById('persona-error');
 const saveBtn   = document.getElementById('save-persona-btn');
 
-// clicking the Add Profile button opens the modal and resets its state
+// open the modal and clear any leftover state from last time
 addBtn.addEventListener('click', () => {
     nameInput.value = '';
     errorDiv.classList.add('d-none');
@@ -59,23 +71,16 @@ function submitNewPersona() {
         return;
     }
 
-    // send the new persona to the server
-    fetch('/api/personas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name })
-    })
-        .then(res => res.json().then(data => ({ ok: res.ok, data })))
-        .then(({ ok, data }) => {
-            if (!ok) {
-                errorDiv.textContent = data.error || 'Something went wrong.';
-                errorDiv.classList.remove('d-none');
-                return;
-            }
-            // add the new card to the page and close the modal
-            list.insertBefore(createCard(data), addBtn);
-            modal.hide();
-        });
+    // TODO(partner): replace this local add with POST /api/personas
+    const id = name.toLowerCase().replace(/\s+/g, '-');
+    const newPersona = {
+        id,
+        name,
+        avatar: 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'
+    };
+
+    list.insertBefore(createCard(newPersona), addBtn);
+    modal.hide();
 }
 
 saveBtn.addEventListener('click', submitNewPersona);
