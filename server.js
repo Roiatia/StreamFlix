@@ -1,7 +1,7 @@
 const express = require('express');
 const crypto = require('crypto');
 
-const app = express();
+const app  = express();
 const PORT = 3000;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -88,7 +88,6 @@ app.post('/login', (req, res) => {
     return res.redirect(`/?passwordError=${encodeURIComponent('Password must be at least 6 characters.')}`);
   }
 
-  // format is valid — now check credentials
   if (email !== VALID_USER.email || password !== VALID_USER.password) {
     return res.redirect(`/?formError=${encodeURIComponent('Invalid email or password.')}`);
   }
