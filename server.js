@@ -10,8 +10,7 @@ const PORT = 3000;
 const contentData  = require('./data/content.json');
 const personasData = require('./data/personas.json');
 
-// spread into mutable arrays so we can add personas at runtime
-// without ever writing back to the JSON files
+// copy to memory so we can add personas without touching the JSON files
 const personas       = [...personasData];
 const contentItems   = [...contentData.items];
 const popularIds     = contentData.popularIds;
@@ -20,8 +19,7 @@ const baseLikeCounts = contentData.baseLikeCounts;
 
 // --- Session store ---
 
-// TODO: in a real app, sessions would live in a database
-const sessions = new Set();
+const sessions = new Set(); // active session tokens
 
 const VALID_EMAIL    = 'test@example.com';
 const VALID_PASSWORD = '123456';
@@ -30,7 +28,7 @@ const EMAIL_RE       = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // --- Helpers ---
 
-// read a single cookie value out of the request headers
+// reads a named cookie from the request
 function getCookie(req, name) {
   const header = req.headers.cookie || '';
   for (const chunk of header.split(';')) {
@@ -40,7 +38,7 @@ function getCookie(req, name) {
   return null;
 }
 
-// middleware that blocks unauthenticated requests to protected routes
+// redirect to login if the user doesn't have a valid session
 function requireAuth(req, res, next) {
   const token = getCookie(req, 'session');
   if (token && sessions.has(token)) return next();
@@ -53,7 +51,7 @@ function requireAuth(req, res, next) {
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-// serve only specific public folders — keeps /data out of reach
+// only expose these folders — /data stays private
 app.use('/css',            express.static('css'));
 app.use('/js',             express.static('js'));
 app.use('/images',         express.static('images'));
@@ -86,7 +84,7 @@ app.post('/login', (req, res) => {
     return res.redirect(`/?formError=${encodeURIComponent('Invalid email or password.')}`);
   }
 
-  // credentials valid — create a random token and store it
+  // login OK — give the user a session token
   const token = crypto.randomBytes(32).toString('hex');
   sessions.add(token);
   res.cookie('session', token, { httpOnly: true });
@@ -148,19 +146,17 @@ app.post('/api/personas', requireAuth, (req, res) => {
 app.get('/api/content', requireAuth, (req, res) => {
   const personaId = (req.query.persona || 'guest').trim();
 
-  // reject completely unknown persona IDs
   if (!personas.some(p => p.id === personaId)) {
     return res.status(404).json({ error: `Persona '${personaId}' not found.` });
   }
 
-  // filter to items tagged for this persona
-  // if the persona is new and has no tagged items, fall back to guest content
+  // get items for this persona; new profiles with no tagged content fall back to guest
   let items = contentItems.filter(item => item.personas.includes(personaId));
   if (items.length === 0) {
     items = contentItems.filter(item => item.personas.includes('guest'));
   }
 
-  // only include popular IDs that are actually in the filtered set
+  // only keep popular IDs that exist in this persona's content
   const itemIds = new Set(items.map(c => c.id));
   const filteredPopularIds = popularIds.filter(id => itemIds.has(id));
 
