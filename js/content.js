@@ -18,7 +18,20 @@ let baseLikeCounts = {
 };
 
 // populated from /api/personas on load — keyed by persona id
-const personaProfiles = {};
+const personaProfiles = {
+  roi: {
+    name: 'Roi',
+    avatar: 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'
+  },
+  dan: {
+    name: 'Dan',
+    avatar: 'https://ih1.redbubble.net/image.618427277.3222/flat,1000x1000,075,f.u2.jpg'
+  },
+  guest: {
+    name: 'Guest',
+    avatar: 'https://ih1.redbubble.net/image.618427277.3222/flat,1000x1000,075,f.u2.jpg'
+  }
+};
 
 // ----- Persona state -----
 // each profile stores its own watched/liked/list data in localStorage
@@ -396,19 +409,9 @@ function initNavPersona() {
 window.addEventListener('resize', initScrollButtons);
 
 document.addEventListener('DOMContentLoaded', () => {
-  // fetch content and personas in parallel, then render once both arrive
-  Promise.all([
-    fetch(`/api/content?persona=${getCurrentPersonaId()}`).then(r => r.json()),
-    fetch('/api/personas').then(r => r.json()),
-  ]).then(([contentData, personasData]) => {
-    streamflixContent = contentData.items;
-    popularIds        = contentData.popularIds;
-    baseLikeCounts    = contentData.baseLikeCounts;
+  // TODO(partner): fetch content and personas from the server here
+  initNavPersona();
+  renderHomeContent();
+});
 
     // build the id → {name, avatar} lookup from the personas array
-    personasData.forEach(p => { personaProfiles[p.id] = { name: p.name, avatar: p.avatar }; });
-
-    initNavPersona();
-    renderHomeContent();
-  });
-});
