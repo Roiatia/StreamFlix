@@ -91,3 +91,25 @@ a {
 .logout-link:hover {
     color: white;
 }
+
+/* dark theme for the Add Profile modal */
+.add-profile-modal {
+    background: #1a1a1a;
+    color: white;
+    border: 1px solid #444;
+}
+.add-profile-modal .modal-header,
+.add-profile-modal .modal-footer {
+    border-color: #444;
+}
+.persona-name-input {
+    background: #2a2a2a;
+    color: white;
+    border-color: #555;
+}
+.persona-name-input:focus {
+    background: #2a2a2a;
+    color: white;
+    border-color: #888;
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
+}
