@@ -25,30 +25,35 @@ function createCard(persona) {
     return a;
 }
 
-const list   = document.getElementById('profiles-list');
+const list = document.getElementById('profiles-list');
 const addBtn = list.querySelector('.add-btn');
 
-async function loadPersonas() {
-    const res = await fetch('/api/personas');
-
-    if (!res.ok) {
-        throw new Error('Failed to load personas.');
+// TODO: replace this local list with GET /api/personas
+const localPersonas = [
+    {
+        id: 'roi',
+        name: 'Roi',
+        avatar: 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'
+    },
+    {
+        id: 'dan',
+        name: 'Dan',
+        avatar: 'https://ih1.redbubble.net/image.618427277.3222/flat,1000x1000,075,f.u2.jpg'
+    },
+    {
+        id: 'guest',
+        name: 'Guest',
+        avatar: 'https://ih1.redbubble.net/image.618427277.3222/flat,1000x1000,075,f.u2.jpg'
     }
+];
 
-    const personas = await res.json();
-    personas.forEach(p => list.insertBefore(createCard(p), addBtn));
-}
+localPersonas.forEach(p => list.insertBefore(createCard(p), addBtn));
 
-loadPersonas().catch(err => {
-    console.error(err);
-});
-
-const modal     = new bootstrap.Modal(document.getElementById('addProfileModal'));
+const modal = new bootstrap.Modal(document.getElementById('addProfileModal'));
 const nameInput = document.getElementById('new-persona-name');
-const errorDiv  = document.getElementById('persona-error');
-const saveBtn   = document.getElementById('save-persona-btn');
+const errorDiv = document.getElementById('persona-error');
+const saveBtn = document.getElementById('save-persona-btn');
 
-// open the modal and clear any leftover state from last time
 addBtn.addEventListener('click', () => {
     nameInput.value = '';
     errorDiv.classList.add('d-none');
@@ -56,7 +61,7 @@ addBtn.addEventListener('click', () => {
     modal.show();
 });
 
-function submitNewPersona() {
+async function submitNewPersona() {
     const name = nameInput.value.trim();
 
     if (!name) {
@@ -67,19 +72,18 @@ function submitNewPersona() {
 
     // TODO: replace this local add with POST /api/personas
     const id = name.toLowerCase().replace(/\s+/g, '-');
-    const newPersona = {
+    const data = {
         id,
         name,
         avatar: 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'
     };
 
-    list.insertBefore(createCard(newPersona), addBtn);
+    list.insertBefore(createCard(data), addBtn);
     modal.hide();
 }
 
 saveBtn.addEventListener('click', submitNewPersona);
 
-// pressing Enter in the name field also submits
 nameInput.addEventListener('keydown', e => {
     if (e.key === 'Enter') submitNewPersona();
 });
