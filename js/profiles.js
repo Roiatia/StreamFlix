@@ -1,4 +1,4 @@
-// build a persona card element using DOM methods (avoids innerHTML with user data)
+// build a clickable card for one persona
 function createCard(persona) {
     const a = document.createElement('a');
     a.href = `interface.html?persona=${persona.id}`;
@@ -25,10 +25,10 @@ function createCard(persona) {
     return a;
 }
 
-const list   = document.getElementById('profiles-list');
+const list = document.getElementById('profiles-list');
 const addBtn = list.querySelector('.add-btn');
 
-// TODO(partner): replace this local list with GET /api/personas
+// TODO: replace this local list with GET /api/personas
 const localPersonas = [
     {
         id: 'roi',
@@ -49,12 +49,11 @@ const localPersonas = [
 
 localPersonas.forEach(p => list.insertBefore(createCard(p), addBtn));
 
-const modal     = new bootstrap.Modal(document.getElementById('addProfileModal'));
+const modal = new bootstrap.Modal(document.getElementById('addProfileModal'));
 const nameInput = document.getElementById('new-persona-name');
-const errorDiv  = document.getElementById('persona-error');
-const saveBtn   = document.getElementById('save-persona-btn');
+const errorDiv = document.getElementById('persona-error');
+const saveBtn = document.getElementById('save-persona-btn');
 
-// open the modal and clear any leftover state from last time
 addBtn.addEventListener('click', () => {
     nameInput.value = '';
     errorDiv.classList.add('d-none');
@@ -62,7 +61,7 @@ addBtn.addEventListener('click', () => {
     modal.show();
 });
 
-function submitNewPersona() {
+async function submitNewPersona() {
     const name = nameInput.value.trim();
 
     if (!name) {
@@ -71,21 +70,20 @@ function submitNewPersona() {
         return;
     }
 
-    // TODO(partner): replace this local add with POST /api/personas
+    // TODO: replace this local add with POST /api/personas
     const id = name.toLowerCase().replace(/\s+/g, '-');
-    const newPersona = {
+    const data = {
         id,
         name,
         avatar: 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'
     };
 
-    list.insertBefore(createCard(newPersona), addBtn);
+    list.insertBefore(createCard(data), addBtn);
     modal.hide();
 }
 
 saveBtn.addEventListener('click', submitNewPersona);
 
-// pressing Enter in the name field also submits
 nameInput.addEventListener('keydown', e => {
     if (e.key === 'Enter') submitNewPersona();
 });
