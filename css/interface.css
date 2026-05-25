@@ -189,7 +189,8 @@ body {
 .scroll-btn {
     position: absolute;
     top: 0;
-    height: 250px;
+    bottom: 0;
+    height: auto;
     width: 50px;
     background: rgba(0, 0, 0, 0.6);
     border: none;
