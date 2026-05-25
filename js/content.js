@@ -5,6 +5,7 @@ let personaProfiles = {};
 
 // ----- Server data -----
 
+// load content for the current persona, then load all profiles
 async function loadServerData() {
   const personaId = getCurrentPersonaId();
 
@@ -12,8 +13,8 @@ async function loadServerData() {
   const contentData = await contentResponse.json();
 
   if (!contentResponse.ok) {
-    console.log(contentData.error || 'Could not load content from server');
-    return;
+    console.error(contentData.error || 'Could not load content from server');
+    return false;
   }
 
   streamflixContent = contentData.items;
@@ -21,21 +22,30 @@ async function loadServerData() {
   baseLikeCounts = contentData.baseLikeCounts;
 
   const personasResponse = await fetch('/api/personas');
+
+  if (!personasResponse.ok) {
+    console.error('Could not load personas from server');
+    return false;
+  }
+
   const personas = await personasResponse.json();
 
   personaProfiles = {};
-
   personas.forEach(persona => {
     personaProfiles[persona.id] = persona;
   });
+
+  return true;
 }
 
 // ----- Persona state -----
 
+// each profile has its own watched, liked, and list data stored separately in localStorage
 function createEmptyPersonaState() {
   return { watchedIds: [], likedIds: [], myListIds: [] };
 }
 
+// get the persona from the URL - e.g. ?persona=roi
 function getCurrentPersonaId() {
   return new URLSearchParams(window.location.search).get('persona') || 'guest';
 }
@@ -44,6 +54,7 @@ function getPersonaStorageKey() {
   return `streamflix_persona_${getCurrentPersonaId()}`;
 }
 
+// load this persona's saved state from localStorage - start fresh if nothing is there yet
 function getPersonaState() {
   try {
     const saved = JSON.parse(localStorage.getItem(getPersonaStorageKey()));
@@ -120,6 +131,7 @@ function toggleLike(id) {
   updateLikeButtons(id);
 }
 
+// sync all like buttons for this item and play the heart pop animation
 function updateLikeButtons(id) {
   const liked = isLiked(id);
   const count = getDisplayedLikeCount(id);
@@ -127,6 +139,7 @@ function updateLikeButtons(id) {
   document.querySelectorAll(`[data-like-id="${id}"]`).forEach(btn => {
     btn.classList.toggle('liked', liked);
 
+    // reading offsetWidth forces a repaint, which restarts the animation
     btn.classList.remove('heart-pop');
     void btn.offsetWidth;
     btn.classList.add('heart-pop');
@@ -167,6 +180,7 @@ function toggleMyList(id) {
     btn.title = inList ? 'Remove from My List' : 'Add to My List';
   });
 
+  // if the user is on the My List tab, refresh it so the change shows right away
   if (document.querySelector('.nav-item.active')?.dataset.category === 'mylist') {
     renderMyList();
   }
@@ -174,6 +188,7 @@ function toggleMyList(id) {
 
 // ----- Rendering helpers -----
 
+// escape HTML so user data can't break the page or run as a script
 function escapeHtml(str) {
   return String(str)
     .replace(/&/g, '&amp;')
@@ -222,6 +237,7 @@ function renderTrendingCard(item, rank) {
     </div>`;
 }
 
+// build a card and save the search text on it as a data attribute so filtering works
 function renderCard(item) {
   const inList = isInMyList(item.id);
   const searchText = `${item.title} ${item.description}`.toLowerCase();
@@ -239,6 +255,7 @@ function renderCard(item) {
     </div>`;
 }
 
+// build a labeled row with scrollable cards and left/right arrows
 function renderRow(label, items, trending) {
   const cards = trending
     ? items.slice(0, 10).map((item, i) => renderTrendingCard(item, i + 1)).join('')
@@ -257,6 +274,7 @@ function renderRow(label, items, trending) {
 
 // ----- Scroll -----
 
+// jump the row left or right by one full page width
 function scrollRow(btn, direction) {
   const rowItems = btn.closest('.row-wrapper').querySelector('.row-items');
 
@@ -270,6 +288,7 @@ function scrollRow(btn, direction) {
   setTimeout(() => updateScrollButtons(rowItems), 450);
 }
 
+// show or hide the arrows based on how far the row is scrolled
 function updateScrollButtons(rowItems) {
   const wrapper = rowItems.closest('.row-wrapper');
   if (!wrapper) return;
@@ -281,6 +300,7 @@ function updateScrollButtons(rowItems) {
   wrapper.querySelector('.scroll-right')?.classList.toggle('visible', cur < max - 2);
 }
 
+// wire up scroll events on all rows and show/hide their arrows based on position
 function initScrollButtons() {
   document.querySelectorAll('.row-items').forEach(rowItems => {
     updateScrollButtons(rowItems);
@@ -294,6 +314,7 @@ function initScrollButtons() {
 
 // ----- Feed search -----
 
+// hide cards that don't match the search and hide the trending row while searching
 function filterFeedPosts(query) {
   const container = document.getElementById('contentRows');
   let visibleCount = 0;
@@ -319,6 +340,7 @@ function filterFeedPosts(query) {
     row.style.display = rowVisible ? '' : 'none';
   });
 
+  // show a "no results" message if nothing matched
   let msg = container.querySelector('.feed-no-results');
 
   if (visibleCount === 0) {
@@ -335,6 +357,7 @@ function filterFeedPosts(query) {
   }
 }
 
+// show everything again after the search is cleared
 function resetFeedSearch() {
   const container = document.getElementById('contentRows');
 
@@ -359,6 +382,7 @@ function resetFeedSearch() {
 
 // ----- Home feed -----
 
+// decide which rows to show on the home page based on what this persona has watched
 function buildPersonaFeedRows() {
   const state = getPersonaState();
   const rows = [];
@@ -371,6 +395,7 @@ function buildPersonaFeedRows() {
     rows.push({ label: 'Continue Watching', items: watchedItems });
   }
 
+  // add up to 2 recommendation rows based on genres from the watch history
   const seenGenres = new Set();
 
   watchedItems.forEach(watched => {
@@ -418,6 +443,7 @@ function buildPersonaFeedRows() {
     items: streamflixContent.filter(c => c.type === 'Movie'),
   });
 
+  // if nothing has been watched yet, fall back to some genre rows
   if (watchedItems.length === 0) {
     rows.push({
       label: 'Thriller & Crime',
@@ -437,6 +463,7 @@ function buildPersonaFeedRows() {
   return rows;
 }
 
+// render the home page and skip any rows that have no items
 function renderHomeContent() {
   document.getElementById('contentRows').innerHTML = buildPersonaFeedRows()
     .filter(row => row.items.length > 0)
@@ -448,6 +475,7 @@ function renderHomeContent() {
 
 // ----- Init -----
 
+// put the right name and avatar in the navbar for whoever is logged in
 function initNavPersona() {
   const profile = personaProfiles[getCurrentPersonaId()] || personaProfiles.guest;
 
@@ -460,10 +488,14 @@ function initNavPersona() {
   }
 }
 
+// arrows might need to show or hide when the window size changes
 window.addEventListener('resize', initScrollButtons);
 
 document.addEventListener('DOMContentLoaded', async () => {
-  await loadServerData();
+  // don't show anything until the server data is ready
+  const loaded = await loadServerData();
+  if (!loaded) return;
+
   initNavPersona();
   renderHomeContent();
 });

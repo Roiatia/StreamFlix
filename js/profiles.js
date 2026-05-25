@@ -1,3 +1,4 @@
+// build a clickable card for a persona that links to their feed
 function createCard(persona) {
     const a = document.createElement('a');
     a.href = `interface.html?persona=${persona.id}`;
@@ -28,8 +29,15 @@ function createCard(persona) {
 const list = document.getElementById('profiles-list');
 const addBtn = list.querySelector('.add-btn');
 
+// fetch all personas from the server and show a card for each one
 async function loadPersonas() {
     const response = await fetch('/api/personas');
+
+    if (!response.ok) {
+        console.error('Could not load personas from server');
+        return;
+    }
+
     const personas = await response.json();
 
     personas.forEach(p => {
@@ -58,6 +66,7 @@ async function submitNewPersona() {
         return;
     }
 
+    // send the new persona name to the server
     const response = await fetch('/api/personas', {
         method: 'POST',
         headers: {
@@ -68,6 +77,7 @@ async function submitNewPersona() {
 
     const data = await response.json();
 
+    // if the server returned an error, show it in the modal
     if (!response.ok) {
         errorDiv.textContent = data.error || 'Could not add profile.';
         errorDiv.classList.remove('d-none');
