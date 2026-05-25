@@ -28,7 +28,7 @@ const EMAIL_RE       = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // --- Helpers ---
 
-// reads a named cookie from the request
+// look up a specific cookie by name from the request
 function getCookie(req, name) {
   const header = req.headers.cookie || '';
   for (const chunk of header.split(';')) {
@@ -38,7 +38,7 @@ function getCookie(req, name) {
   return null;
 }
 
-// redirect to login if the user doesn't have a valid session
+// send the user back to login if they don't have a valid session
 function requireAuth(req, res, next) {
   const token = getCookie(req, 'session');
   if (token && sessions.has(token)) return next();
@@ -51,7 +51,7 @@ function requireAuth(req, res, next) {
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-// only expose these folders — /data stays private
+// only expose these folders - /data stays private
 app.use('/css',            express.static('css'));
 app.use('/js',             express.static('js'));
 app.use('/images',         express.static('images'));
@@ -84,13 +84,14 @@ app.post('/login', (req, res) => {
     return res.redirect(`/?formError=${encodeURIComponent('Invalid email or password.')}`);
   }
 
-  // login OK — give the user a session token
+  // login OK - give the user a session token
   const token = crypto.randomBytes(32).toString('hex');
   sessions.add(token);
   res.cookie('session', token, { httpOnly: true });
   res.redirect('/UserScreen.html');
 });
 
+// delete their session and send them back to the login page
 app.get('/logout', (req, res) => {
   const token = getCookie(req, 'session');
   if (token) sessions.delete(token);
@@ -150,13 +151,13 @@ app.get('/api/content', requireAuth, (req, res) => {
     return res.status(404).json({ error: `Persona '${personaId}' not found.` });
   }
 
-  // get items for this persona; new profiles with no tagged content fall back to guest
+  // new profiles have no content tagged to them yet, so fall back to guest content
   let items = contentItems.filter(item => item.personas.includes(personaId));
   if (items.length === 0) {
     items = contentItems.filter(item => item.personas.includes('guest'));
   }
 
-  // only keep popular IDs that exist in this persona's content
+  // trim popularIds down to only the ones this persona actually has
   const itemIds = new Set(items.map(c => c.id));
   const filteredPopularIds = popularIds.filter(id => itemIds.has(id));
 
