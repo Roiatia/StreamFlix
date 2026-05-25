@@ -24,7 +24,9 @@ function closeSearch() {
   searchContainer.classList.remove('open');
   searchOverlay.classList.add('hidden');
   contentRows.classList.remove('hidden');
+  if (typeof resetFeedSearch === 'function') {
   resetFeedSearch();
+}
 }
 
 // check if the user is currently on the home feed tab

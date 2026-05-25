@@ -1,4 +1,3 @@
-// build a clickable card for one persona
 function createCard(persona) {
     const a = document.createElement('a');
     a.href = `interface.html?persona=${persona.id}`;
@@ -22,32 +21,21 @@ function createCard(persona) {
     div.appendChild(iconDiv);
     div.appendChild(span);
     a.appendChild(div);
+
     return a;
 }
 
 const list = document.getElementById('profiles-list');
 const addBtn = list.querySelector('.add-btn');
 
-// TODO: replace this local list with GET /api/personas
-const localPersonas = [
-    {
-        id: 'roi',
-        name: 'Roi',
-        avatar: 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'
-    },
-    {
-        id: 'dan',
-        name: 'Dan',
-        avatar: 'https://ih1.redbubble.net/image.618427277.3222/flat,1000x1000,075,f.u2.jpg'
-    },
-    {
-        id: 'guest',
-        name: 'Guest',
-        avatar: 'https://ih1.redbubble.net/image.618427277.3222/flat,1000x1000,075,f.u2.jpg'
-    }
-];
+async function loadPersonas() {
+    const response = await fetch('/api/personas');
+    const personas = await response.json();
 
-localPersonas.forEach(p => list.insertBefore(createCard(p), addBtn));
+    personas.forEach(p => {
+        list.insertBefore(createCard(p), addBtn);
+    });
+}
 
 const modal = new bootstrap.Modal(document.getElementById('addProfileModal'));
 const nameInput = document.getElementById('new-persona-name');
@@ -70,13 +58,21 @@ async function submitNewPersona() {
         return;
     }
 
-    // TODO: replace this local add with POST /api/personas
-    const id = name.toLowerCase().replace(/\s+/g, '-');
-    const data = {
-        id,
-        name,
-        avatar: 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'
-    };
+    const response = await fetch('/api/personas', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name: name })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        errorDiv.textContent = data.error || 'Could not add profile.';
+        errorDiv.classList.remove('d-none');
+        return;
+    }
 
     list.insertBefore(createCard(data), addBtn);
     modal.hide();
@@ -87,3 +83,5 @@ saveBtn.addEventListener('click', submitNewPersona);
 nameInput.addEventListener('keydown', e => {
     if (e.key === 'Enter') submitNewPersona();
 });
+
+document.addEventListener('DOMContentLoaded', loadPersonas);
