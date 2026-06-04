@@ -57,17 +57,14 @@ function requireAuth(req, res, next) {
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-// only expose these folders - /data stays private
-app.use('/css',            express.static('css'));
-app.use('/js',             express.static('js'));
-app.use('/images',         express.static('images'));
-app.use('/content-images', express.static('content-images'));
+// serve everything in public/ at the root URL - /data stays private
+app.use(express.static('public'));
 
 
 // --- Public routes ---
 
 app.get('/', (req, res) => {
-  res.sendFile('index.html', { root: '.' });
+  res.sendFile('index.html', { root: 'views' });
 });
 
 app.post('/login', (req, res) => {
@@ -109,11 +106,11 @@ app.get('/logout', (req, res) => {
 // --- Protected pages ---
 
 app.get('/UserScreen.html', requireAuth, (req, res) => {
-  res.sendFile('UserScreen.html', { root: '.' });
+  res.sendFile('UserScreen.html', { root: 'views' });
 });
 
 app.get('/interface.html', requireAuth, (req, res) => {
-  res.sendFile('interface.html', { root: '.' });
+  res.sendFile('interface.html', { root: 'views' });
 });
 
 
