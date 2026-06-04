@@ -496,3 +496,16 @@ body {
 .hidden {
     display: none !important;
 }
+.card-delete-btn {
+    background: #e50914;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+.card-delete-btn:hover {
+    background: #b20710;
+}

@@ -37,6 +37,28 @@ async function loadServerData() {
 
   return true;
 }
+async function deletePost(postId) {
+  try {
+    const response = await fetch(`/posts/${postId}`, {
+      method: 'DELETE'
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      const postElement = document.getElementById(`post-${postId}`);
+
+      if (postElement) {
+        postElement.remove();
+      }
+    } else {
+      alert(result.message || 'Error deleting post');
+    }
+  } catch (error) {
+    alert('Server error while deleting post');
+  }
+}
+
 
 // ----- Persona state -----
 
@@ -208,18 +230,32 @@ function cardInfoHTML(item) {
     <div class="card-info">
       <p class="card-title">${escapeHtml(item.title)}</p>
       <p class="card-meta">${escapeHtml(item.type)} &middot; ${item.year} &middot; ${escapeHtml(item.rating)}</p>
-      <div class="card-actions">
-        <button class="card-watch-btn${isWatched(item.id) ? ' watched' : ''}" data-watch-id="${item.id}"
-          onclick="markContentWatched(${item.id}); event.stopPropagation()">${isWatched(item.id) ? 'Watched' : 'Watch'}</button>
 
-        <button class="card-like-btn${isLiked(item.id) ? ' liked' : ''}" data-like-id="${item.id}"
-          onclick="toggleLike(${item.id}); event.stopPropagation()">&#9829;
-          <span data-like-count-id="${item.id}">${getDisplayedLikeCount(item.id)}</span>
+      <div class="card-actions">
+
+        <button class="card-watch-btn${isWatched(item.id) ? ' watched' : ''}"
+          data-watch-id="${item.id}"
+          onclick="markContentWatched(${item.id}); event.stopPropagation()">
+          ${isWatched(item.id) ? 'Watched' : 'Watch'}
         </button>
+
+        <button class="card-like-btn${isLiked(item.id) ? ' liked' : ''}"
+          data-like-id="${item.id}"
+          onclick="toggleLike(${item.id}); event.stopPropagation()">
+          ♥
+          <span data-like-count-id="${item.id}">
+            ${getDisplayedLikeCount(item.id)}
+          </span>
+        </button>
+
+        <button class="card-delete-btn"
+          onclick="deletePost('${item._id || item.id}'); event.stopPropagation()">
+          Delete
+        </button>
+
       </div>
     </div>`;
 }
-
 function renderTrendingCard(item, rank) {
   const inList = isInMyList(item.id);
 
@@ -243,7 +279,7 @@ function renderCard(item) {
   const searchText = `${item.title} ${item.description}`.toLowerCase();
 
   return `
-    <div class="content-card" title="${escapeHtml(item.description)}"
+    <div class="content-card"  id="post-${item._id || item.id}" title="${escapeHtml(item.description)}"
          data-feed-post data-search-text="${escapeHtml(searchText)}">
       <div class="card-thumb" style="${thumbStyleFor(item)}">
         <span class="card-genre">${escapeHtml(item.genre)}</span>
