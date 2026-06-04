@@ -1,5 +1,11 @@
-const express = require('express');
-const crypto  = require('crypto');
+require('dotenv').config();
+
+const express   = require('express');
+const crypto    = require('crypto');
+const connectDB   = require('./config/db');
+const postRoutes  = require('./routes/postRoutes');
+
+connectDB();
 
 const app  = express();
 const PORT = 3000;
@@ -112,6 +118,8 @@ app.get('/interface.html', requireAuth, (req, res) => {
 
 
 // --- API routes ---
+
+app.use('/', postRoutes);
 
 app.get('/api/personas', requireAuth, (req, res) => {
   res.json(personas);
