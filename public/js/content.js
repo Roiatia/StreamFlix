@@ -498,4 +498,95 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   initNavPersona();
   renderHomeContent();
+
+  loadPosts();
+  document.getElementById('postForm')?.addEventListener('submit', createPost);
 });
+
+
+// ----- Posts -----
+
+async function loadPosts() {
+  try {
+    const res  = await fetch('/posts');
+    const data = await res.json();
+    if (data.success) renderPosts(data.posts);
+  } catch (err) {
+    console.error('Could not load posts:', err);
+  }
+}
+
+function formatPostDate(iso) {
+  return new Date(iso).toLocaleDateString('en-US', {
+    year: 'numeric', month: 'short', day: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+}
+
+function renderPosts(posts) {
+  const container = document.getElementById('postsContainer');
+  if (!container) return;
+
+  if (posts.length === 0) {
+    container.innerHTML = '<p class="posts-empty">No posts yet. Be the first to post!</p>';
+    return;
+  }
+
+  container.innerHTML = posts.map(post => `
+    <div class="post-card" id="post-${post._id}">
+      <div class="post-header">
+        <span class="post-author">${escapeHtml(post.author)}</span>
+        <span class="post-date">${formatPostDate(post.createdAt)}</span>
+      </div>
+      <h3 class="post-title">${escapeHtml(post.title)}</h3>
+      <p class="post-content-text">${escapeHtml(post.content)}</p>
+      <button class="post-delete-btn" onclick="deletePost('${post._id}')">Delete</button>
+    </div>
+  `).join('');
+}
+
+async function createPost(event) {
+  event.preventDefault();
+
+  const title   = document.getElementById('postTitle').value.trim();
+  const content = document.getElementById('postContent').value.trim();
+  const author  = document.getElementById('postAuthor').value.trim();
+
+  if (!title || !content || !author) {
+    alert('Title, content, and author are all required.');
+    return;
+  }
+
+  try {
+    const res  = await fetch('/posts', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ title, content, author })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      document.getElementById('postForm').reset();
+      loadPosts();
+    } else {
+      alert(data.message || 'Could not create post.');
+    }
+  } catch (err) {
+    alert('Could not create post.');
+  }
+}
+
+async function deletePost(postId) {
+  try {
+    const res  = await fetch(`/posts/${postId}`, { method: 'DELETE' });
+    const data = await res.json();
+
+    if (data.success) {
+      document.getElementById(`post-${postId}`)?.remove();
+    } else {
+      alert(data.message || 'Could not delete post.');
+    }
+  } catch (err) {
+    alert('Could not delete post.');
+  }
+}

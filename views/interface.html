@@ -51,6 +51,21 @@
     <div id="contentRows"></div>
 </main>
 
+<section class="posts-section">
+  <div class="posts-inner">
+    <h2 class="posts-heading">Posts</h2>
+
+    <form id="postForm" class="post-form">
+      <input   type="text" id="postTitle"   class="post-input"              placeholder="Title"            />
+      <textarea            id="postContent" class="post-input post-textarea" placeholder="Write something…"></textarea>
+      <input   type="text" id="postAuthor"  class="post-input"              placeholder="Author"           />
+      <button  type="submit"                class="post-submit-btn">Post</button>
+    </form>
+
+    <div id="postsContainer"></div>
+  </div>
+</section>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/content.js"></script>
 <script src="/js/nav.js"></script>
