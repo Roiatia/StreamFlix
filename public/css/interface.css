@@ -497,6 +497,20 @@ body {
     display: none !important;
 }
 
+.card-delete-btn {
+    background: #e50914;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+.card-delete-btn:hover {
+    background: #b20710;
+}
+
 /* ===== POSTS SECTION ===== */
 .posts-section {
     background: #0d0d0d;
@@ -630,6 +644,7 @@ body {
 .post-delete-btn:hover {
     color: #e50914;
     border-color: #e50914;
+    background: rgba(229, 9, 20, 0.08);
 }
 
 .posts-empty {
