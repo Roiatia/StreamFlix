@@ -496,16 +496,147 @@ body {
 .hidden {
     display: none !important;
 }
-.card-delete-btn {
+
+/* ===== POSTS SECTION ===== */
+.posts-section {
+    background: #0d0d0d;
+    border-top: 2px solid #222;
+    padding: 40px 0 60px;
+    margin-top: 20px;
+}
+
+.posts-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.posts-heading {
+    color: #e5e5e5;
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-bottom: 24px;
+}
+
+/* form */
+.post-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 32px;
+}
+
+.post-input {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+    color: #e5e5e5;
+    font-size: 14px;
+    font-family: 'Segoe UI', sans-serif;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.post-input::placeholder {
+    color: #666;
+}
+
+.post-input:focus {
+    border-color: #e50914;
+}
+
+.post-textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.post-submit-btn {
+    align-self: flex-start;
     background: #e50914;
     color: white;
     border: none;
     border-radius: 4px;
-    padding: 4px 10px;
+    padding: 9px 28px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Segoe UI', sans-serif;
     cursor: pointer;
-    margin-left: 8px;
+    transition: background 0.2s;
 }
 
-.card-delete-btn:hover {
-    background: #b20710;
+.post-submit-btn:hover {
+    background: #f40612;
+}
+
+/* post cards */
+.post-card {
+    background: #181818;
+    border: 1px solid #2a2a2a;
+    border-radius: 4px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.post-author {
+    color: #e50914;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.post-date {
+    color: #666;
+    font-size: 11px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.post-title {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0 0 6px 0;
+}
+
+.post-content-text {
+    color: #b3b3b3;
+    font-size: 13px;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+}
+
+.post-delete-btn {
+    background: transparent;
+    color: #666;
+    border: 1px solid #333;
+    border-radius: 3px;
+    padding: 3px 12px;
+    font-size: 11px;
+    font-family: 'Segoe UI', sans-serif;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.post-delete-btn:hover {
+    color: #e50914;
+    border-color: #e50914;
+    background: rgba(229, 9, 20, 0.08);
+}
+
+.posts-empty {
+    color: #555;
+    font-size: 14px;
+    font-family: 'Segoe UI', sans-serif;
+    text-align: center;
+    padding: 30px 0;
 }

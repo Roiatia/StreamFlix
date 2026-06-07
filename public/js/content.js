@@ -37,28 +37,6 @@ async function loadServerData() {
 
   return true;
 }
-async function deletePost(postId) {
-  try {
-    const response = await fetch(`/posts/${postId}`, {
-      method: 'DELETE'
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      const postElement = document.getElementById(`post-${postId}`);
-
-      if (postElement) {
-        postElement.remove();
-      }
-    } else {
-      alert(result.message || 'Error deleting post');
-    }
-  } catch (error) {
-    alert('Server error while deleting post');
-  }
-}
-
 
 // ----- Persona state -----
 
@@ -230,32 +208,18 @@ function cardInfoHTML(item) {
     <div class="card-info">
       <p class="card-title">${escapeHtml(item.title)}</p>
       <p class="card-meta">${escapeHtml(item.type)} &middot; ${item.year} &middot; ${escapeHtml(item.rating)}</p>
-
       <div class="card-actions">
+        <button class="card-watch-btn${isWatched(item.id) ? ' watched' : ''}" data-watch-id="${item.id}"
+          onclick="markContentWatched(${item.id}); event.stopPropagation()">${isWatched(item.id) ? 'Watched' : 'Watch'}</button>
 
-        <button class="card-watch-btn${isWatched(item.id) ? ' watched' : ''}"
-          data-watch-id="${item.id}"
-          onclick="markContentWatched(${item.id}); event.stopPropagation()">
-          ${isWatched(item.id) ? 'Watched' : 'Watch'}
+        <button class="card-like-btn${isLiked(item.id) ? ' liked' : ''}" data-like-id="${item.id}"
+          onclick="toggleLike(${item.id}); event.stopPropagation()">&#9829;
+          <span data-like-count-id="${item.id}">${getDisplayedLikeCount(item.id)}</span>
         </button>
-
-        <button class="card-like-btn${isLiked(item.id) ? ' liked' : ''}"
-          data-like-id="${item.id}"
-          onclick="toggleLike(${item.id}); event.stopPropagation()">
-          ♥
-          <span data-like-count-id="${item.id}">
-            ${getDisplayedLikeCount(item.id)}
-          </span>
-        </button>
-
-        <button class="card-delete-btn"
-          onclick="deletePost('${item._id || item.id}'); event.stopPropagation()">
-          Delete
-        </button>
-
       </div>
     </div>`;
 }
+
 function renderTrendingCard(item, rank) {
   const inList = isInMyList(item.id);
 
@@ -279,7 +243,7 @@ function renderCard(item) {
   const searchText = `${item.title} ${item.description}`.toLowerCase();
 
   return `
-    <div class="content-card"  id="post-${item._id || item.id}" title="${escapeHtml(item.description)}"
+    <div class="content-card" title="${escapeHtml(item.description)}"
          data-feed-post data-search-text="${escapeHtml(searchText)}">
       <div class="card-thumb" style="${thumbStyleFor(item)}">
         <span class="card-genre">${escapeHtml(item.genre)}</span>
@@ -534,4 +498,95 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   initNavPersona();
   renderHomeContent();
+
+  loadPosts();
+  document.getElementById('postForm')?.addEventListener('submit', createPost);
 });
+
+
+// ----- Posts -----
+
+async function loadPosts() {
+  try {
+    const res  = await fetch('/posts');
+    const data = await res.json();
+    if (data.success) renderPosts(data.posts);
+  } catch (err) {
+    console.error('Could not load posts:', err);
+  }
+}
+
+function formatPostDate(iso) {
+  return new Date(iso).toLocaleDateString('en-US', {
+    year: 'numeric', month: 'short', day: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+}
+
+function renderPosts(posts) {
+  const container = document.getElementById('postsContainer');
+  if (!container) return;
+
+  if (posts.length === 0) {
+    container.innerHTML = '<p class="posts-empty">No posts yet. Be the first to post!</p>';
+    return;
+  }
+
+  container.innerHTML = posts.map(post => `
+    <div class="post-card" id="post-${post._id}">
+      <div class="post-header">
+        <span class="post-author">${escapeHtml(post.author)}</span>
+        <span class="post-date">${formatPostDate(post.createdAt)}</span>
+      </div>
+      <h3 class="post-title">${escapeHtml(post.title)}</h3>
+      <p class="post-content-text">${escapeHtml(post.content)}</p>
+      <button class="post-delete-btn" onclick="deletePost('${post._id}')">Delete</button>
+    </div>
+  `).join('');
+}
+
+async function createPost(event) {
+  event.preventDefault();
+
+  const title   = document.getElementById('postTitle').value.trim();
+  const content = document.getElementById('postContent').value.trim();
+  const author  = document.getElementById('postAuthor').value.trim();
+
+  if (!title || !content || !author) {
+    alert('Title, content, and author are all required.');
+    return;
+  }
+
+  try {
+    const res  = await fetch('/posts', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ title, content, author })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      document.getElementById('postForm').reset();
+      loadPosts();
+    } else {
+      alert(data.message || 'Could not create post.');
+    }
+  } catch (err) {
+    alert('Could not create post.');
+  }
+}
+
+async function deletePost(postId) {
+  try {
+    const res  = await fetch(`/posts/${postId}`, { method: 'DELETE' });
+    const data = await res.json();
+
+    if (data.success) {
+      document.getElementById(`post-${postId}`)?.remove();
+    } else {
+      alert(data.message || 'Could not delete post.');
+    }
+  } catch (err) {
+    alert('Could not delete post.');
+  }
+}
