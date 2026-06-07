@@ -38,28 +38,6 @@ async function loadServerData() {
   return true;
 }
 
-async function deletePost(postId) {
-  try {
-    const response = await fetch(`/posts/${postId}`, {
-      method: 'DELETE'
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      const postElement = document.getElementById(`post-${postId}`);
-
-      if (postElement) {
-        postElement.remove();
-      }
-    } else {
-      alert(result.message || 'Error deleting post');
-    }
-  } catch (error) {
-    alert('Server error while deleting post');
-  }
-}
-
 // ----- Persona state -----
 
 // each profile has its own watched, liked, and list data stored separately in localStorage
@@ -238,11 +216,6 @@ function cardInfoHTML(item) {
           onclick="toggleLike(${item.id}); event.stopPropagation()">&#9829;
           <span data-like-count-id="${item.id}">${getDisplayedLikeCount(item.id)}</span>
         </button>
-
-        <button class="card-delete-btn"
-          onclick="deletePost('${item._id || item.id}'); event.stopPropagation()">
-          Delete
-        </button>
       </div>
     </div>`;
 }
@@ -270,7 +243,7 @@ function renderCard(item) {
   const searchText = `${item.title} ${item.description}`.toLowerCase();
 
   return `
-    <div class="content-card" id="post-${item._id || item.id}" title="${escapeHtml(item.description)}"
+    <div class="content-card" title="${escapeHtml(item.description)}"
          data-feed-post data-search-text="${escapeHtml(searchText)}">
       <div class="card-thumb" style="${thumbStyleFor(item)}">
         <span class="card-genre">${escapeHtml(item.genre)}</span>
