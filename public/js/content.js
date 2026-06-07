@@ -506,6 +506,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // ----- Posts -----
 
+function showPostMessage(message, type) {
+  const el = document.getElementById('postMessage');
+  if (!el) return;
+  el.textContent = message;
+  el.classList.remove('hidden', 'post-message-success', 'post-message-error');
+  el.classList.add(`post-message-${type}`);
+  clearTimeout(el._hideTimer);
+  el._hideTimer = setTimeout(() => el.classList.add('hidden'), 3000);
+}
+
+function validatePostForm(title, content, author) {
+  if (title.length < 2)   return 'Title must be at least 2 characters.';
+  if (content.length < 5) return 'Content must be at least 5 characters.';
+  if (author.length < 2)  return 'Author must be at least 2 characters.';
+  return '';
+}
+
 async function loadPosts() {
   try {
     const res  = await fetch('/posts');
@@ -552,8 +569,9 @@ async function createPost(event) {
   const content = document.getElementById('postContent').value.trim();
   const author  = document.getElementById('postAuthor').value.trim();
 
-  if (!title || !content || !author) {
-    alert('Title, content, and author are all required.');
+  const error = validatePostForm(title, content, author);
+  if (error) {
+    showPostMessage(error, 'error');
     return;
   }
 
@@ -568,25 +586,30 @@ async function createPost(event) {
     if (data.success) {
       document.getElementById('postForm').reset();
       loadPosts();
+      showPostMessage('Post created successfully.', 'success');
     } else {
-      alert(data.message || 'Could not create post.');
+      showPostMessage(data.message || 'Could not create post.', 'error');
     }
   } catch (err) {
-    alert('Could not create post.');
+    showPostMessage('Could not create post.', 'error');
   }
 }
 
 async function deletePost(postId) {
+  const confirmed = confirm('Are you sure you want to delete this post?');
+  if (!confirmed) return;
+
   try {
     const res  = await fetch(`/posts/${postId}`, { method: 'DELETE' });
     const data = await res.json();
 
     if (data.success) {
       document.getElementById(`post-${postId}`)?.remove();
+      showPostMessage('Post deleted successfully.', 'success');
     } else {
-      alert(data.message || 'Could not delete post.');
+      showPostMessage(data.message || 'Could not delete post.', 'error');
     }
   } catch (err) {
-    alert('Could not delete post.');
+    showPostMessage('Could not delete post.', 'error');
   }
 }
