@@ -599,6 +599,20 @@ body {
     font-family: 'Segoe UI', sans-serif;
 }
 
+.post-dates {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.post-dates span {
+    color: #555;
+    font-size: 10px;
+    font-family: 'Segoe UI', sans-serif;
+    white-space: nowrap;
+}
+
 .post-title {
     color: #ffffff;
     font-size: 15px;

@@ -553,7 +553,10 @@ function renderPosts(posts) {
     <div class="post-card" id="post-${post._id}">
       <div class="post-header">
         <span class="post-author">${escapeHtml(post.author)}</span>
-        <span class="post-date">${formatPostDate(post.createdAt)}</span>
+        <div class="post-dates">
+          <span>Created: ${formatPostDate(post.createdAt)}</span>
+          <span>Updated: ${formatPostDate(post.updatedAt || post.createdAt)}</span>
+        </div>
       </div>
       <h3 class="post-title">${escapeHtml(post.title)}</h3>
       <p class="post-content-text">${escapeHtml(post.content)}</p>
