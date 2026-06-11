@@ -1,124 +1,202 @@
-# StreamFlix – Streaming UI Clone
+# StreamFlix
 
-A modern streaming-platform frontend inspired by services like Netflix, built as part of a college web development project.
+StreamFlix is a streaming-platform web project built for a college Web Development course.
 
-StreamFlix recreates the core streaming experience — from authentication and profile selection to personalized recommendations and dynamic content browsing — using a custom dark-themed brand identity.
-
----
-
-# Features
-
-## Authentication & Login
-- Client-side form validation using Vanilla JavaScript (ES6+)
-- Email format validation with Regex
-- Password length validation
-- Inline error messages
-- Dynamic error clearing while typing
-- Redirect flow after successful login
-
-## Profile Selection
-- “Who’s Watching?” style profile screen
-- Multiple user profiles
-- Avatar-based profile cards
-- Manage profiles button
-
-## Main Dashboard
-- Netflix-inspired interface
-- Hero content sections
-- Trending rows
-- Watch buttons
-- Like counters
-- Smooth hover effects
-
-## Personalized Experience
-- Continue Watching section
-- Genre-based recommendations
-- Per-profile saved state using `localStorage`
-
-## Search System
-- Live content filtering
-- Search overlay across pages
-- Dynamic search results
-
-## My List
-- Save favorite titles
-- Remove titles dynamically
-- Dedicated My List page
-
-## Responsive Design
-- Built with Bootstrap 5
-- Responsive layouts for multiple screen sizes
-- Optimized spacing and alignment
+The project started as a Netflix-style UI and was upgraded to use a simple MVC structure, MongoDB, Mongoose, and a posts feed. Users can log in, browse content, search movies and shows, and manage posts that are saved in MongoDB.
 
 ---
 
-# Screenshots
+## Demo
 
-| Login Screen | Profile Selection |
-| --- | --- |
-| ![StreamFlix login screen](images/screenshots/streamflix-login.png) | ![StreamFlix profile selection screen](images/screenshots/streamflix-profiles.png) |
+### Login
 
-| Home Dashboard | Recommendations Feed |
-| --- | --- |
-| ![StreamFlix home dashboard](images/screenshots/streamflix-home.png) | ![StreamFlix recommendations page](images/screenshots/streamflix-recommendations.png) |
+![Login demo](public/images/demo/LOGIN.gif)
+
+### Navigation
+
+![Navigation demo](public/images/demo/NAVIGATION.gif)
+
+### Content Search
+
+![Search demo](public/images/demo/SEARCH.gif)
+
+### Create Post
+
+![Create post demo](public/images/demo/CREATE%20POST.gif)
+
+### Edit Post
+
+![Edit post demo](public/images/demo/EDIT%20POST.gif)
+
+### Delete Post
+
+![Delete post demo](public/images/demo/DELETE%20POST.gif)
+
+### Filter Posts
+
+![Filter post demo](public/images/demo/FILTER%20POST.gif)
 
 ---
 
-# Technologies Used
+## Features
 
-| Technology | Purpose |
-|---|---|
-| HTML5 | Semantic page structure |
-| CSS3 | Custom styling, animations, gradients |
-| Bootstrap 5.3 | Responsive layout and UI utilities |
-| JavaScript (ES6+) | Validation, search, rendering, state management |
-| localStorage | Profile persistence and saved content |
+- Login page with basic validation.
+- Profile selection screen.
+- StreamFlix home page with content rows.
+- Navigation between movies, TV shows, games, new and popular, my list, and languages.
+- Search for content by title, genre, type, description, or year.
+- Personal watch/list state using `localStorage`.
+- Posts feed stored in MongoDB.
+- Create, edit, and delete posts.
+- Search posts by title or content.
+- Filter posts by author.
+- Styled success and error messages for post actions.
 
 ---
 
-# Project Structure
+## MVC And MongoDB
+
+The project uses a simple MVC structure:
+
+- `models/` contains the Mongoose model for posts.
+- `controllers/` contains the logic for getting, creating, updating, and deleting posts.
+- `routes/` defines the post API routes.
+- `views/` contains the HTML pages.
+- `public/` contains CSS, client-side JavaScript, images, content images, and demo GIFs.
+- `config/` contains the MongoDB connection file.
+
+The `Post` model is saved in MongoDB and includes:
+
+- `title`
+- `content`
+- `author`
+- `createdAt`
+- `updatedAt`
+
+The date fields are created automatically by Mongoose timestamps.
+
+---
+
+## API Routes
+
+| Method | Route | Description |
+| --- | --- | --- |
+| `GET` | `/posts` | Get all posts from MongoDB |
+| `POST` | `/posts` | Create a new post |
+| `PUT` | `/posts/:id` | Edit an existing post |
+| `DELETE` | `/posts/:id` | Delete a post |
+
+All post routes return JSON responses with success or error messages.
+
+---
+
+## How To Run
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Create a `.env` file in the project root.
+
+3. Add your MongoDB connection string in this format:
+
+```env
+MONGO_URI=your_mongodb_connection_string
+```
+
+4. Start the server:
+
+```bash
+npm start
+```
+
+5. Open the app:
 
 ```text
-StreamFlix/
-├── css/
-│   ├── LoginPage.css
-│   ├── users.css
-│   └── interface.css
-│
-├── js/
-│   ├── login.js
-│   ├── content.js
-│   ├── nav.js
-│   └── search.js
-│
-├── images/
-│   └── screenshots/
-│
-├── content-images/
-│
-├── index.html
-├── UserScreen.html
-├── interface.html
-└── README.md
+http://localhost:3000
+```
+
+Test login:
+
+```text
+Email: test@example.com
+Password: 123456
 ```
 
 ---
 
-# Project Goals
+## Project Structure
 
-The purpose of this project was to practice:
-- Modern frontend development
-- Responsive UI design
-- DOM manipulation
-- Form validation
-- Dynamic rendering
-- State management using `localStorage`
-- Creating a polished real-world user experience
+```text
+StreamFlix/
+|-- config/
+|   `-- db.js
+|-- controllers/
+|   `-- postController.js
+|-- data/
+|   |-- content.json
+|   `-- personas.json
+|-- models/
+|   `-- postModel.js
+|-- public/
+|   |-- css/
+|   |   |-- LoginPage.css
+|   |   |-- interface.css
+|   |   `-- users.css
+|   |-- js/
+|   |   |-- content.js
+|   |   |-- login.js
+|   |   |-- nav.js
+|   |   |-- profiles.js
+|   |   `-- search.js
+|   |-- images/
+|   |   `-- demo/
+|   `-- content-images/
+|-- routes/
+|   `-- postRoutes.js
+|-- views/
+|   |-- index.html
+|   |-- interface.html
+|   `-- UserScreen.html
+|-- .gitignore
+|-- package.json
+|-- server.js
+`-- README.md
+```
 
 ---
 
-# Disclaimer
+## Technologies Used
 
-This project was created for educational and portfolio purposes only.
+| Technology | Purpose |
+| --- | --- |
+| HTML | Page structure |
+| CSS | Styling and layout |
+| JavaScript | Client-side behavior |
+| Bootstrap | Responsive UI helpers |
+| Node.js | Server runtime |
+| Express | Web server and routes |
+| MongoDB | Database for posts |
+| Mongoose | MongoDB model and queries |
+| dotenv | Environment variables |
 
-All trademarks, streaming references, and brand identities related to Netflix belong to their respective owners.
+---
+
+## Assignment Notes
+
+- The project uses MVC separation for the posts feature.
+- Posts are stored in MongoDB, not in a server memory array.
+- Post deletion uses `fetch` and removes the post from the page without refreshing.
+- The `.env` file is not submitted because it contains the MongoDB connection string.
+- `node_modules/` is not submitted.
+- The MongoDB connection string should stay private.
+
+---
+
+## Disclaimer
+
+This project was created for educational purposes only.
+
+StreamFlix is a student project inspired by streaming services. It is not connected to Netflix or any other real streaming platform.

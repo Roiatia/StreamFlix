@@ -243,7 +243,7 @@ function renderTrendingCard(item, rank) {
 // build a card and save the search text on it as a data attribute so filtering works
 function renderCard(item) {
   const inList = isInMyList(item.id);
-  const searchText = `${item.title} ${item.description}`.toLowerCase();
+  const searchText = `${item.title} ${item.genre} ${item.type} ${item.description} ${item.year} ${item.language}`.toLowerCase();
 
   return `
     <div class="content-card" title="${escapeHtml(item.description)}"
