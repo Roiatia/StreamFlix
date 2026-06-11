@@ -629,6 +629,61 @@ body {
     line-height: 1.5;
 }
 
+.post-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.post-filter-input {
+    flex: 1;
+}
+
+.post-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.post-cancel-btn {
+    background: transparent;
+    color: #888;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 9px 16px;
+    font-size: 14px;
+    font-family: 'Segoe UI', sans-serif;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.post-cancel-btn:hover {
+    color: #e5e5e5;
+    border-color: #888;
+}
+
+.post-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.post-edit-btn {
+    background: transparent;
+    color: #666;
+    border: 1px solid #333;
+    border-radius: 3px;
+    padding: 3px 12px;
+    font-size: 11px;
+    font-family: 'Segoe UI', sans-serif;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.post-edit-btn:hover {
+    color: #e5a50a;
+    border-color: #e5a50a;
+}
+
 .post-delete-btn {
     background: transparent;
     color: #666;

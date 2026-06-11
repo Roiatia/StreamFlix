@@ -55,11 +55,39 @@
   <div class="posts-inner">
     <h2 class="posts-heading">Posts</h2>
 
+    <div class="post-filters">
+      <input type="text" 
+             id="postSearch"       
+             class="post-input post-filter-input" 
+             placeholder="Search by title or content…" 
+             oninput="applyPostFilters()" 
+             />
+      
+      <input type="text" 
+              id="postAuthorFilter" 
+              class="post-input post-filter-input" 
+              placeholder="Filter by author…"            
+              oninput="applyPostFilters()" 
+              />
+    </div>
+
     <form id="postForm" class="post-form">
-      <input   type="text" id="postTitle"   class="post-input"              placeholder="Title"            />
-      <textarea            id="postContent" class="post-input post-textarea" placeholder="Write something…"></textarea>
-      <input   type="text" id="postAuthor"  class="post-input"              placeholder="Author"           />
-      <button  type="submit"                class="post-submit-btn">Post</button>
+      <input   type="text" 
+               id="postTitle"   
+               class="post-input"              
+               placeholder="Title"            
+               />
+      
+      <textarea id="postContent" 
+                class="post-input post-textarea" 
+                placeholder="Write something…">
+            </textarea>
+      
+        <input   type="text" id="postAuthor"  class="post-input"              placeholder="Author"           />
+      <div class="post-form-actions">
+        <button type="submit" id="postSubmitBtn" class="post-submit-btn">Post</button>
+        <button type="button" id="cancelEditBtn" class="post-cancel-btn hidden" onclick="cancelEdit()">Cancel</button>
+      </div>
     </form>
 
     <div id="postMessage" class="post-message hidden"></div>

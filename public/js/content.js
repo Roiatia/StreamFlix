@@ -3,6 +3,9 @@ let popularIds = [];
 let baseLikeCounts = {};
 let personaProfiles = {};
 
+let editingPostId = null;
+let allPosts = [];
+
 // ----- Server data -----
 
 // load content for the current persona, then load all profiles
@@ -500,7 +503,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderHomeContent();
 
   loadPosts();
-  document.getElementById('postForm')?.addEventListener('submit', createPost);
+  document.getElementById('postForm')?.addEventListener('submit', handlePostSubmit);
 });
 
 
@@ -517,15 +520,15 @@ function showPostMessage(message, type) {
 }
 
 function validatePostForm(title, content, author) {
-  if (title.length < 2)   return 'Title must be at least 2 characters.';
+  if (title.length < 2) return 'Title must be at least 2 characters.';
   if (content.length < 5) return 'Content must be at least 5 characters.';
-  if (author.length < 2)  return 'Author must be at least 2 characters.';
+  if (author.length < 2) return 'Author must be at least 2 characters.';
   return '';
 }
 
 async function loadPosts() {
   try {
-    const res  = await fetch('/posts');
+    const res = await fetch('/posts');
     const data = await res.json();
     if (data.success) renderPosts(data.posts);
   } catch (err) {
@@ -541,15 +544,35 @@ function formatPostDate(iso) {
 }
 
 function renderPosts(posts) {
+  allPosts = posts;
+  applyPostFilters();
+}
+
+function applyPostFilters() {
   const container = document.getElementById('postsContainer');
   if (!container) return;
 
-  if (posts.length === 0) {
-    container.innerHTML = '<p class="posts-empty">No posts yet. Be the first to post!</p>';
+  const searchQuery = document.getElementById('postSearch')?.value.trim().toLowerCase() || '';
+  const authorQuery = document.getElementById('postAuthorFilter')?.value.trim().toLowerCase() || '';
+
+  const filtered = allPosts.filter(post => {
+    const matchesSearch = !searchQuery ||
+      post.title.toLowerCase().includes(searchQuery) ||
+      post.content.toLowerCase().includes(searchQuery);
+    const matchesAuthor = !authorQuery || post.author.toLowerCase().includes(authorQuery);
+    return matchesSearch && matchesAuthor;
+  });
+
+  if (filtered.length === 0) {
+    if (allPosts.length === 0) {
+      container.innerHTML = '<p class="posts-empty">No posts yet. Be the first to post!</p>';
+    } else {
+      container.innerHTML = '<p class="posts-empty">No posts match your filters.</p>';
+    }
     return;
   }
 
-  container.innerHTML = posts.map(post => `
+  container.innerHTML = filtered.map(post => `
     <div class="post-card" id="post-${post._id}">
       <div class="post-header">
         <span class="post-author">${escapeHtml(post.author)}</span>
@@ -560,17 +583,49 @@ function renderPosts(posts) {
       </div>
       <h3 class="post-title">${escapeHtml(post.title)}</h3>
       <p class="post-content-text">${escapeHtml(post.content)}</p>
-      <button class="post-delete-btn" onclick="deletePost('${post._id}')">Delete</button>
+      <div class="post-actions">
+        <button class="post-edit-btn"
+          data-id="${post._id}"
+          data-title="${escapeHtml(post.title)}"
+          data-content="${escapeHtml(post.content)}"
+          data-author="${escapeHtml(post.author)}"
+          onclick="startEditPost(this)">Edit</button>
+        <button class="post-delete-btn" onclick="deletePost('${post._id}')">Delete</button>
+      </div>
     </div>
   `).join('');
 }
 
-async function createPost(event) {
+function handlePostSubmit(event) {
   event.preventDefault();
+  if (editingPostId) {
+    updatePost();
+  } else {
+    createPost();
+  }
+}
 
-  const title   = document.getElementById('postTitle').value.trim();
+function startEditPost(btn) {
+  editingPostId = btn.dataset.id;
+  document.getElementById('postTitle').value = btn.dataset.title;
+  document.getElementById('postContent').value = btn.dataset.content;
+  document.getElementById('postAuthor').value = btn.dataset.author;
+  document.getElementById('postSubmitBtn').textContent = 'Update';
+  document.getElementById('cancelEditBtn').classList.remove('hidden');
+  document.getElementById('postTitle').focus();
+}
+
+function cancelEdit() {
+  editingPostId = null;
+  document.getElementById('postForm').reset();
+  document.getElementById('postSubmitBtn').textContent = 'Post';
+  document.getElementById('cancelEditBtn').classList.add('hidden');
+}
+
+async function updatePost() {
+  const title = document.getElementById('postTitle').value.trim();
   const content = document.getElementById('postContent').value.trim();
-  const author  = document.getElementById('postAuthor').value.trim();
+  const author = document.getElementById('postAuthor').value.trim();
 
   const error = validatePostForm(title, content, author);
   if (error) {
@@ -579,10 +634,41 @@ async function createPost(event) {
   }
 
   try {
-    const res  = await fetch('/posts', {
-      method:  'POST',
+    const res = await fetch(`/posts/${editingPostId}`, {
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ title, content, author })
+      body: JSON.stringify({ title, content, author })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      cancelEdit();
+      loadPosts();
+      showPostMessage('Post updated successfully.', 'success');
+    } else {
+      showPostMessage(data.message || 'Could not update post.', 'error');
+    }
+  } catch (err) {
+    showPostMessage('Could not update post.', 'error');
+  }
+}
+
+async function createPost() {
+  const title = document.getElementById('postTitle').value.trim();
+  const content = document.getElementById('postContent').value.trim();
+  const author = document.getElementById('postAuthor').value.trim();
+
+  const error = validatePostForm(title, content, author);
+  if (error) {
+    showPostMessage(error, 'error');
+    return;
+  }
+
+  try {
+    const res = await fetch('/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, content, author })
     });
     const data = await res.json();
 
@@ -603,11 +689,12 @@ async function deletePost(postId) {
   if (!confirmed) return;
 
   try {
-    const res  = await fetch(`/posts/${postId}`, { method: 'DELETE' });
+    const res = await fetch(`/posts/${postId}`, { method: 'DELETE' });
     const data = await res.json();
 
     if (data.success) {
-      document.getElementById(`post-${postId}`)?.remove();
+      allPosts = allPosts.filter(p => p._id !== postId);
+      applyPostFilters();
       showPostMessage('Post deleted successfully.', 'success');
     } else {
       showPostMessage(data.message || 'Could not delete post.', 'error');
