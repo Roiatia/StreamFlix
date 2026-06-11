@@ -24,6 +24,30 @@ async function createPost(req, res) {
   }
 }
 
+async function updatePost(req, res) {
+  try {
+    const { title, content, author } = req.body;
+
+    if (!title?.trim() || !content?.trim() || !author?.trim()) {
+      return res.status(400).json({ success: false, message: 'Title, content, and author are required' });
+    }
+
+    const updated = await Post.findByIdAndUpdate(
+      req.params.id,
+      { title, content, author },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: 'Post not found' });
+    }
+
+    res.json({ success: true, message: 'Post updated successfully', post: updated });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Error updating post' });
+  }
+}
+
 async function deletePost(req, res) {
   try {
     const deleted = await Post.findByIdAndDelete(req.params.id);
@@ -38,4 +62,4 @@ async function deletePost(req, res) {
   }
 }
 
-module.exports = { getAllPosts, createPost, deletePost };
+module.exports = { getAllPosts, createPost, updatePost, deletePost };
