@@ -1,37 +1,48 @@
-const personasData = require('../data/personas.json');
+const Profile = require('../models/profileModel');
 
-// in-memory copy so new profiles don't touch the JSON file
-const personas = [...personasData];
-
-function getPersonas(req, res) {
-  res.json(personas);
+async function getPersonas(req, res) {
+  try {
+    const profiles = await Profile.find().sort({ createdAt: 1 });
+    res.json(profiles.map(p => ({ id: p.legacyId, name: p.name, avatar: p.avatar })));
+  } catch (err) {
+    res.status(500).json({ error: 'Could not load profiles.' });
+  }
 }
 
-function createPersona(req, res) {
-  const name = (req.body.name || '').trim();
+async function createPersona(req, res) {
+  try {
+    const name = (req.body.name || '').trim();
 
-  if (!name) {
-    return res.status(400).json({ error: 'Name is required.' });
+    if (!name) {
+      return res.status(400).json({ error: 'Name is required.' });
+    }
+    if (name.length > 30) {
+      return res.status(400).json({ error: 'Name must be 30 characters or fewer.' });
+    }
+
+    // build an id from the name, e.g. "New User" -> "new-user"
+    const legacyId = name.toLowerCase().replace(/\s+/g, '-');
+
+    const exists = await Profile.findOne({
+      $or: [
+        { legacyId },
+        { name: { $regex: `^${name}$`, $options: 'i' } },
+      ],
+    });
+    if (exists) {
+      return res.status(409).json({ error: 'A profile with that name already exists.' });
+    }
+
+    const profile = await Profile.create({
+      legacyId,
+      name,
+      avatar: 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png',
+    });
+
+    res.status(201).json({ id: profile.legacyId, name: profile.name, avatar: profile.avatar });
+  } catch (err) {
+    res.status(500).json({ error: 'Could not create profile.' });
   }
-  if (name.length > 30) {
-    return res.status(400).json({ error: 'Name must be 30 characters or fewer.' });
-  }
-
-  // build an id from the name, e.g. "New User" -> "new-user"
-  const id = name.toLowerCase().replace(/\s+/g, '-');
-
-  if (personas.some(p => p.id === id || p.name.toLowerCase() === name.toLowerCase())) {
-    return res.status(409).json({ error: 'A profile with that name already exists.' });
-  }
-
-  const newPersona = {
-    id,
-    name,
-    avatar: 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'
-  };
-
-  personas.push(newPersona);
-  res.status(201).json(newPersona);
 }
 
-module.exports = { personas, getPersonas, createPersona };
+module.exports = { getPersonas, createPersona };
