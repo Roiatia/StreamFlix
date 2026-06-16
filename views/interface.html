@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,96 +9,92 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/interface.css">
 </head>
+
 <body>
 
-<nav class="navbar main-header">
-    <div class="left-side">
-        <a href="#" class="navbar-brand logo">StreamFlix</a>
-        <div class="navigation">
-            <a href="#" class="nav-item active" data-category="home"       onclick="setActiveNav(this); return false;">Home</a>
-            <a href="#" class="nav-item"         data-category="tvshows"   onclick="setActiveNav(this); return false;">TV Shows</a>
-            <a href="#" class="nav-item"         data-category="movies"    onclick="setActiveNav(this); return false;">Movies</a>
-            <a href="#" class="nav-item"         data-category="games"     onclick="setActiveNav(this); return false;">Games</a>
-            <a href="#" class="nav-item"         data-category="newpopular" onclick="setActiveNav(this); return false;">New &amp; Popular</a>
-            <a href="#" class="nav-item"         data-category="mylist"    onclick="setActiveNav(this); return false;">My List</a>
-            <a href="#" class="nav-item"         data-category="languages" onclick="setActiveNav(this); return false;">Browse by Languages</a>
+    <nav class="navbar main-header">
+        <div class="left-side">
+            <a href="#" class="navbar-brand logo">StreamFlix</a>
+            <div class="navigation">
+                <a href="/interface.html" class="nav-item active">Home</a>
+                <a href="#" class="nav-item" data-category="tvshows" onclick="setActiveNav(this); return false;">TV
+                    Shows</a>
+                <a href="#" class="nav-item" data-category="movies"
+                    onclick="setActiveNav(this); return false;">Movies</a>
+                <a href="#" class="nav-item" data-category="games" onclick="setActiveNav(this); return false;">Games</a>
+                <a href="#" class="nav-item" data-category="newpopular" onclick="setActiveNav(this); return false;">New
+                    &amp; Popular</a>
+                <a href="#" class="nav-item" data-category="mylist" onclick="setActiveNav(this); return false;">My
+                    List</a>
+                <a href="#" class="nav-item" data-category="languages"
+                    onclick="setActiveNav(this); return false;">Languages</a>
+                <a href="/advanced-search.html" class="nav-item">Advanced Search</a>
+                <a href="/statistics.html" class="nav-item">Statistics</a>
+                <a href="/map.html" class="nav-item">Map</a>
+            </div>
         </div>
-    </div>
 
-    <div class="right-side">
-        <div class="search-container" id="searchContainer">
-            <span class="icon search-icon" id="searchIcon" onclick="toggleSearch()">🔍</span>
-            <input
-                type="text"
-                class="search-input"
-                id="searchInput"
-                placeholder="Titles, genres, years…"
-                oninput="handleSearch(this.value)"
-                autocomplete="off"
-            />
+        <div class="right-side">
+            <div class="search-container" id="searchContainer">
+                <span class="icon search-icon" id="searchIcon" onclick="toggleSearch()">🔍</span>
+                <input type="text" class="search-input" id="searchInput" placeholder="Titles, genres, years…"
+                    oninput="handleSearch(this.value)" autocomplete="off" />
+            </div>
+            <span class="icon">🔔</span>
+            <div class="profile-box">
+                <img id="navAvatar" src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png"
+                    alt="Profile" class="avatar">
+                <span id="navPersonaName" class="persona-name"></span>
+                <span class="caret">▼</span>
+            </div>
+            <a href="/logout" class="logout-link">Sign Out</a>
         </div>
-        <span class="icon">🔔</span>
-        <div class="profile-box">
-            <img id="navAvatar" src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" alt="Profile" class="avatar">
-            <span id="navPersonaName" class="persona-name"></span>
-            <span class="caret">▼</span>
-        </div>
-        <a href="/logout" class="logout-link">Sign Out</a>
-    </div>
-</nav>
+    </nav>
 
-<main class="content-area">
-    <div class="search-overlay hidden" id="searchOverlay"></div>
-    <div id="contentRows"></div>
-</main>
+    <main class="content-area">
+        <div class="search-overlay hidden" id="searchOverlay"></div>
+        <div id="contentRows"></div>
+    </main>
 
-<section class="posts-section">
-  <div class="posts-inner">
-    <h2 class="posts-heading">Posts</h2>
+    <section class="posts-section">
+        <div class="posts-inner">
+            <h2 class="posts-heading">Posts</h2>
 
-    <div class="post-filters">
-      <input type="text" 
-             id="postSearch"       
-             class="post-input post-filter-input" 
-             placeholder="Search by title or content…" 
-             oninput="applyPostFilters()" 
-             />
-      
-      <input type="text" 
-              id="postAuthorFilter" 
-              class="post-input post-filter-input" 
-              placeholder="Filter by author…"            
-              oninput="applyPostFilters()" 
-              />
-    </div>
+            <div class="post-filters">
+                <input type="text" id="postSearch" class="post-input post-filter-input"
+                    placeholder="Search by title or content…" oninput="applyPostFilters()" />
 
-    <form id="postForm" class="post-form">
-      <input   type="text" 
-               id="postTitle"   
-               class="post-input"              
-               placeholder="Title"            
-               />
-      
-      <textarea id="postContent" 
-                class="post-input post-textarea" 
-                placeholder="Write something…">
+                <input type="text" id="postAuthorFilter" class="post-input post-filter-input"
+                    placeholder="Filter by author…" oninput="applyPostFilters()" />
+            </div>
+
+            <form id="postForm" class="post-form">
+                <input type="text" id="postTitle" class="post-input" placeholder="Title" />
+
+                <textarea id="postContent" class="post-input post-textarea" placeholder="Write something…">
             </textarea>
-      
-        <input   type="text" id="postAuthor"  class="post-input"              placeholder="Author"           />
-      <div class="post-form-actions">
-        <button type="submit" id="postSubmitBtn" class="post-submit-btn">Post</button>
-        <button type="button" id="cancelEditBtn" class="post-cancel-btn hidden" onclick="cancelEdit()">Cancel</button>
-      </div>
-    </form>
 
-    <div id="postMessage" class="post-message hidden"></div>
-    <div id="postsContainer"></div>
-  </div>
-</section>
+                <input type="text" id="postAuthor" class="post-input" placeholder="Author" />
+                <div class="post-form-actions">
+                    <button type="submit" id="postSubmitBtn" class="post-submit-btn">Post</button>
+                    <button type="button" id="cancelEditBtn" class="post-cancel-btn hidden"
+                        onclick="cancelEdit()">Cancel</button>
+                </div>
+            </form>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/js/content.js"></script>
-<script src="/js/nav.js"></script>
-<script src="/js/search.js"></script>
+            <div id="postMessage" class="post-message hidden"></div>
+            <div id="postsContainer"></div>
+        </div>
+    </section>
+    <footer class="site-footer">
+        <p>© 2026 StreamFlix. Educational project.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/content.js"></script>
+    <script src="/js/nav.js"></script>
+    <script src="/js/search.js"></script>
+
 </body>
+
 </html>

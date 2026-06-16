@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>StreamFlix - Map</title>
+    <link rel="icon" type="image/png" href="/images/S-icon.png">
+    <link rel="stylesheet" href="/css/interface.css">
+</head>
+
+<body>
+
+    <header class="main-header">
+        <div class="left-side">
+            <a href="/interface.html" class="logo">StreamFlix</a>
+            <nav class="navigation">
+                <a href="/interface.html" class="nav-item">Home</a>
+                <a href="/advanced-search.html" class="nav-item">Advanced Search</a>
+                <a href="/statistics.html" class="nav-item">Statistics</a>
+                <a href="/map.html" class="nav-item active">Map</a>
+            </nav>
+        </div>
+        <div class="right-side">
+            <a href="/logout" class="logout-link">Sign Out</a>
+        </div>
+    </header>
+
+    <main class="content-area">
+        <section class="category-hero">
+            <h2>StreamFlix Locations</h2>
+            <p class="page-subtitle">Map locations and live external service data.</p>
+        </section>
+
+        <section class="map-layout">
+            <div class="map-panel">
+                <h3>Locations Map</h3>
+                <div id="map"></div>
+            </div>
+
+            <aside class="external-panel">
+                <h3>External Web Service</h3>
+                <p id="externalInfo">Loading country information...</p>
+            </aside>
+        </section>
+    </main>
+
+    <script src="https://www.bing.com/api/maps/mapcontrol?callback=loadMap" async defer></script>
+    <script src="/js/map.js"></script>
+    <footer class="site-footer">
+        <p>© 2026 StreamFlix. Educational project.</p>
+    </footer>
+</body>
+
+</html>
