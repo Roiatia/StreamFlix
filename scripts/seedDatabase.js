@@ -13,9 +13,11 @@ async function upsertUser({ name, email, password, role }) {
   const passwordHash = await bcrypt.hash(password, 10);
   await User.findOneAndUpdate(
     { email },
-    { $set: { name, email, passwordHash, role }, $unset: { password: '' } },
+    { $set: { name, email, passwordHash, role } },
     { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
   );
+  // Use raw collection op so Mongoose schema filtering doesn't swallow the $unset
+  await User.collection.updateOne({ email }, { $unset: { password: '' } });
 }
 
 async function seed() {
