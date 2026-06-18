@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>StreamFlix - Advanced Search</title>
+    <link rel="icon" type="image/png" href="/images/S-icon.png">
+    <link rel="stylesheet" href="/css/interface.css">
+</head>
+
+<body>
+
+    <header class="main-header">
+        <div class="left-side">
+            <a href="/interface.html" class="logo">StreamFlix</a>
+
+            <nav class="navigation">
+                <a href="/interface.html" class="nav-item">Home</a>
+                <a href="/advanced-search.html" class="nav-item active">Advanced Search</a>
+                <a href="/statistics.html" class="nav-item">Statistics</a>
+                <a href="/map.html" class="nav-item">Map</a>
+            </nav>
+        </div>
+
+        <div class="right-side">
+            <a href="/logout" class="logout-link">Sign Out</a>
+        </div>
+    </header>
+
+    <main class="content-area">
+        <section class="category-hero">
+            <h2>Advanced Search</h2>
+            <p class="page-subtitle">Search the catalog using multiple parameters.</p>
+        </section>
+
+        <section class="advanced-search-panel">
+            <h3>Search by title, genre and year</h3>
+
+            <input id="titleSearch" class="search-field" type="text" placeholder="Title">
+
+            <select id="genreSearch" class="search-field">
+                <option value="">All genres</option>
+                <option value="action">Action</option>
+                <option value="comedy">Comedy</option>
+                <option value="crime">Crime</option>
+                <option value="drama">Drama</option>
+                <option value="sci-fi">Sci-Fi</option>
+                <option value="thriller">Thriller</option>
+                <option value="fantasy">Fantasy</option>
+                <option value="horror">Horror</option>
+                <option value="romance">Romance</option>
+                <option value="animation">Animation</option>
+                <option value="adventure">Adventure</option>
+            </select>
+
+            <input id="yearSearch" class="search-field" type="number" placeholder="Minimum year">
+
+            <button class="btn-search" onclick="runContentSearch()">Search</button>
+        </section>
+
+        <section class="advanced-search-panel">
+            <h3>Search by type, language and rating</h3>
+
+            <select id="typeSearch" class="search-field">
+                <option value="">All types</option>
+                <option value="Movie">Movie</option>
+                <option value="TV Show">TV Show</option>
+                <option value="Game">Game</option>
+            </select>
+
+            <input id="languageSearch" class="search-field" type="text" placeholder="Language">
+            <input id="ratingSearch" class="search-field" type="text" placeholder="Rating">
+
+            <button class="btn-search" onclick="runMetaSearch()">Search</button>
+        </section>
+
+        <section id="advancedSearchResults" class="results-grid advanced-results"></section>
+    </main>
+
+    <script src="/js/advanced-search.js"></script>
+    <footer class="site-footer">
+        <p>© 2026 StreamFlix. Educational project.</p>
+    </footer>
+</body>
+
+</html>

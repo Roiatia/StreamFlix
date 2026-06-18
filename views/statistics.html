@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>StreamFlix - Statistics</title>
+    <link rel="icon" type="image/png" href="/images/S-icon.png">
+    <link rel="stylesheet" href="/css/interface.css">
+</head>
+
+<body>
+
+    <header class="main-header">
+        <div class="left-side">
+            <a href="/interface.html" class="logo">StreamFlix</a>
+            <nav class="navigation">
+                <a href="/interface.html" class="nav-item">Home</a>
+                <a href="/advanced-search.html" class="nav-item">Advanced Search</a>
+                <a href="/statistics.html" class="nav-item active">Statistics</a>
+                <a href="/map.html" class="nav-item">Map</a>
+            </nav>
+        </div>
+        <div class="right-side">
+            <a href="/logout" class="logout-link">Sign Out</a>
+        </div>
+    </header>
+
+    <main class="content-area">
+        <section class="category-hero">
+            <h2>Statistics</h2>
+            <p class="page-subtitle">Dynamic charts based on content data from MongoDB.</p>
+        </section>
+
+        <section class="html5-demo-section">
+            <video class="demo-video" controls>
+                <source src="/videos/demo.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+
+            <canvas id="statsCanvas" width="360" height="90"></canvas>
+        </section>
+
+        <section class="stats-grid">
+            <div class="stats-card">
+                <h3>Content by Genre</h3>
+                <div id="genreChart"></div>
+            </div>
+
+            <div class="stats-card">
+                <h3>Content by Type</h3>
+                <div id="typeChart"></div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="/js/statistics.js"></script>
+    <footer class="site-footer">
+        <p>© 2026 StreamFlix. Educational project.</p>
+    </footer>
+</body>
+
+</html>
