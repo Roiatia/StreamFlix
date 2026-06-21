@@ -23,10 +23,11 @@ async function createPersona(req, res) {
     // build an id from the name, e.g. "New User" -> "new-user"
     const legacyId = name.toLowerCase().replace(/\s+/g, '-');
 
+    const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const exists = await Profile.findOne({
       $or: [
         { legacyId },
-        { name: { $regex: `^${name}$`, $options: 'i' } },
+        { name: { $regex: `^${escapedName}$`, $options: 'i' } },
       ],
     });
     if (exists) {

@@ -1,24 +1,32 @@
 require('dotenv').config();
 
 const mongoose = require('mongoose');
-const User    = require('../models/userModel');
-const Profile = require('../models/profileModel');
-const Content = require('../models/contentModel');
+const bcrypt   = require('bcryptjs');
+const User     = require('../models/userModel');
+const Profile  = require('../models/profileModel');
+const Content  = require('../models/contentModel');
 
 const personasData = require('../data/personas.json');
 const contentData  = require('../data/content.json');
+
+async function upsertUser({ name, email, password, role }) {
+  const passwordHash = await bcrypt.hash(password, 10);
+  await User.findOneAndUpdate(
+    { email },
+    { $set: { name, email, passwordHash, role } },
+    { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
+  );
+  // Use raw collection op so Mongoose schema filtering doesn't swallow the $unset
+  await User.collection.updateOne({ email }, { $unset: { password: '' } });
+}
 
 async function seed() {
   await mongoose.connect(process.env.MONGO_URI);
   console.log('Connected to MongoDB');
 
-  // Test user - only created once
-  await User.findOneAndUpdate(
-    { email: 'test@example.com' },
-    { name: 'Test User', email: 'test@example.com', password: '123456', role: 'user' },
-    { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
-  );
-  console.log('Test user ready');
+  await upsertUser({ name: 'Test User',  email: 'test@example.com',  password: '123456',   role: 'user'  });
+  await upsertUser({ name: 'Admin User', email: 'admin@example.com', password: 'admin123', role: 'admin' });
+  console.log('Users seeded');
 
   // Profiles from personas.json
   for (const p of personasData) {
