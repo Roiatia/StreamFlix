@@ -23,6 +23,6 @@ app.use('/', profileRoutes);
 app.use('/', contentRoutes);
 app.use('/', postRoutes);
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0",() => {
   console.log(`StreamFlix running at http://localhost:${PORT}`);
 });
