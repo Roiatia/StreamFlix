@@ -79,4 +79,8 @@ async function register(req, res) {
   }
 }
 
-module.exports = { login, logout, register };
+function me(req, res) {
+  res.json({ authenticated: true, user: { email: req.user.email, role: req.user.role } });
+}
+
+module.exports = { login, logout, register, me };

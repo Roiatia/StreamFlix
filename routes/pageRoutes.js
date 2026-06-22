@@ -3,6 +3,14 @@ const { requireAuth } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
+// page-specific admin guard: requireAuth already attached req.user, so just
+// check the role here and bounce non-admins to a normal logged-in page
+// instead of the JSON 403 that the API-facing requireAdmin would send.
+function requirePageAdmin(req, res, next) {
+  if (req.user && req.user.role === 'admin') return next();
+  return res.redirect('/UserScreen.html');
+}
+
 router.get('/', (req, res) => {
   res.sendFile('index.html', { root: 'views' });
 });
@@ -29,6 +37,10 @@ router.get('/statistics.html', requireAuth, (req, res) => {
 
 router.get('/map.html', requireAuth, (req, res) => {
   res.sendFile('map.html', { root: 'views' });
+});
+
+router.get('/admin-content.html', requireAuth, requirePageAdmin, (req, res) => {
+  res.sendFile('admin-content.html', { root: 'views' });
 });
 
 module.exports = router;

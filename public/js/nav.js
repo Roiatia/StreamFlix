@@ -1,3 +1,27 @@
+// check who's logged in and, if they're an admin, drop an Admin link into the nav bar
+async function initAdminNavLink() {
+  try {
+    const res = await fetch('/api/auth/me');
+    if (!res.ok) return;
+
+    const data = await res.json();
+    if (!data.authenticated || !data.user || data.user.role !== 'admin') return;
+
+    const nav = document.querySelector('.navigation');
+    if (!nav || nav.querySelector('.admin-nav-link')) return;
+
+    const link = document.createElement('a');
+    link.href = '/admin-content.html';
+    link.className = 'nav-item admin-nav-link';
+    link.textContent = 'Admin';
+    nav.appendChild(link);
+  } catch (err) {
+    // not logged in or request failed — just skip showing the admin link
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initAdminNavLink);
+
 // called when a nav link is clicked — updates the active style and renders the right page
 function setActiveNav(el) {
   // remove 'active' from all nav items, then add it only to the clicked one

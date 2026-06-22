@@ -7,6 +7,7 @@ const authRoutes   = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const contentRoutes = require('./routes/contentRoutes');
 const postRoutes   = require('./routes/postRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
 
 connectDB();
 
@@ -22,6 +23,7 @@ app.use('/', authRoutes);
 app.use('/', profileRoutes);
 app.use('/', contentRoutes);
 app.use('/', postRoutes);
+app.use('/', reviewRoutes);
 
 app.listen(PORT, "0.0.0.0",() => {
   console.log(`StreamFlix running at http://localhost:${PORT}`);

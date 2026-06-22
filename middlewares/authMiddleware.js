@@ -8,6 +8,7 @@ const PAGE_PATHS = new Set([
   '/advanced-search.html',
   '/statistics.html',
   '/map.html',
+  '/admin-content.html',
 ]);
 
 function getCookie(req, name) {
