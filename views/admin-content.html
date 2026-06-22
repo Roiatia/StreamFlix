@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamFlix - Content Management</title>
+    <link rel="icon" type="image/png" href="/images/S-icon.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/interface.css">
+</head>
+<body>
+
+    <nav class="navbar main-header">
+        <div class="left-side">
+            <a href="/interface.html" class="navbar-brand logo">StreamFlix</a>
+            <div class="navigation">
+                <a href="/interface.html" class="nav-item">Home</a>
+                <a href="/admin-content.html" class="nav-item active">Content Management</a>
+            </div>
+        </div>
+
+        <div class="right-side">
+            <a href="/logout" class="logout-link">Sign Out</a>
+        </div>
+    </nav>
+
+    <main class="admin-content-area">
+
+        <div id="adminForbidden" class="admin-forbidden hidden">
+            <p>Admin access is required to view this page.</p>
+            <a href="/UserScreen.html" class="admin-back-link">Back to profiles</a>
+        </div>
+
+        <div id="adminPageContent" class="hidden">
+            <h1 class="admin-title">Content Management</h1>
+
+            <div id="adminMessage" class="admin-message hidden"></div>
+
+            <section class="admin-form-section">
+                <form id="contentForm" class="admin-form" novalidate>
+                    <div class="admin-form-grid">
+                        <input type="text" id="contentTitle" class="admin-input" placeholder="Title *">
+                        <input type="text" id="contentType" class="admin-input" placeholder="Type * (Movie, TV Show, Game)">
+                        <input type="text" id="contentGenre" class="admin-input" placeholder="Genre *">
+                        <input type="number" id="contentYear" class="admin-input" placeholder="Year *">
+                        <input type="text" id="contentRating" class="admin-input" placeholder="Rating *">
+                        <input type="text" id="contentLanguage" class="admin-input" placeholder="Language">
+                        <input type="text" id="contentImg" class="admin-input" placeholder="Image URL or path">
+                        <input type="text" id="contentPersonas" class="admin-input" placeholder="Personas (comma-separated, e.g. roi,dan,guest)">
+                        <input type="number" id="contentBaseLikeCount" class="admin-input" placeholder="Base Like Count">
+                    </div>
+
+                    <textarea id="contentDescription" class="admin-input admin-textarea" placeholder="Description *"></textarea>
+
+                    <label class="admin-checkbox-label">
+                        <input type="checkbox" id="contentIsPopular">
+                        Popular
+                    </label>
+
+                    <div class="admin-form-actions">
+                        <button type="submit" id="contentSubmitBtn" class="admin-submit-btn">Add Content</button>
+                        <button type="button" id="contentCancelBtn" class="admin-cancel-btn hidden">Cancel</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="admin-table-section">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Genre</th>
+                            <th>Year</th>
+                            <th>Rating</th>
+                            <th>Popular</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminContentBody">
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </main>
+
+    <script src="/js/admin-content.js"></script>
+</body>
+</html>

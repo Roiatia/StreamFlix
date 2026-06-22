@@ -1,0 +1,246 @@
+let allContent = [];
+let editingId = null;
+
+function showMessage(text, type) {
+  const el = document.getElementById('adminMessage');
+  el.textContent = text;
+  el.classList.remove('hidden', 'admin-message-success', 'admin-message-error');
+  el.classList.add(`admin-message-${type}`);
+}
+
+function clearMessage() {
+  const el = document.getElementById('adminMessage');
+  el.classList.add('hidden');
+  el.textContent = '';
+}
+
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// shared response handler for the admin CRUD calls below — surfaces
+// 401/403/400/500 consistently so each caller doesn't repeat this logic
+async function handleResponse(res) {
+  let data = null;
+  try {
+    data = await res.json();
+  } catch (err) {
+    data = null;
+  }
+
+  if (res.status === 401) {
+    window.location.href = '/';
+    return null;
+  }
+  if (res.status === 403) {
+    showMessage('Admin access is required for this action.', 'error');
+    return null;
+  }
+  if (!res.ok) {
+    showMessage((data && (data.error || data.message)) || 'Something went wrong.', 'error');
+    return null;
+  }
+  return data;
+}
+
+async function checkAdminAccess() {
+  try {
+    const res = await fetch('/api/auth/me');
+    if (res.status === 401) {
+      window.location.href = '/';
+      return false;
+    }
+
+    const data = await res.json();
+    if (!data.authenticated || !data.user || data.user.role !== 'admin') {
+      document.getElementById('adminForbidden').classList.remove('hidden');
+      document.getElementById('adminPageContent').classList.add('hidden');
+      return false;
+    }
+
+    document.getElementById('adminForbidden').classList.add('hidden');
+    document.getElementById('adminPageContent').classList.remove('hidden');
+    return true;
+  } catch (err) {
+    document.getElementById('adminForbidden').classList.remove('hidden');
+    document.getElementById('adminPageContent').classList.add('hidden');
+    return false;
+  }
+}
+
+async function loadContent() {
+  try {
+    const res = await fetch('/api/admin/content');
+    const data = await handleResponse(res);
+    if (!data) return;
+
+    allContent = data.items || [];
+    renderTable();
+  } catch (err) {
+    showMessage('Could not load content.', 'error');
+  }
+}
+
+function renderTable() {
+  const tbody = document.getElementById('adminContentBody');
+
+  if (!allContent.length) {
+    tbody.innerHTML = '<tr><td colspan="8" class="admin-empty">No content yet.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = allContent.map(item => `
+    <tr>
+      <td>${item.id}</td>
+      <td>${escapeHtml(item.title)}</td>
+      <td>${escapeHtml(item.type)}</td>
+      <td>${escapeHtml(item.genre)}</td>
+      <td>${item.year}</td>
+      <td>${escapeHtml(item.rating)}</td>
+      <td>${item.isPopular ? 'Yes' : 'No'}</td>
+      <td class="admin-row-actions">
+        <button type="button" class="admin-edit-btn" data-id="${item.id}">Edit</button>
+        <button type="button" class="admin-delete-btn" data-id="${item.id}">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+
+  tbody.querySelectorAll('.admin-edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => startEdit(Number(btn.dataset.id)));
+  });
+  tbody.querySelectorAll('.admin-delete-btn').forEach(btn => {
+    btn.addEventListener('click', () => deleteContentItem(Number(btn.dataset.id)));
+  });
+}
+
+function startEdit(id) {
+  const item = allContent.find(i => i.id === id);
+  if (!item) return;
+
+  editingId = id;
+  document.getElementById('contentTitle').value = item.title || '';
+  document.getElementById('contentType').value = item.type || '';
+  document.getElementById('contentGenre').value = item.genre || '';
+  document.getElementById('contentYear').value = item.year ?? '';
+  document.getElementById('contentRating').value = item.rating || '';
+  document.getElementById('contentDescription').value = item.description || '';
+  document.getElementById('contentLanguage').value = item.language || '';
+  document.getElementById('contentImg').value = item.img || '';
+  document.getElementById('contentPersonas').value = (item.personas || []).join(',');
+  document.getElementById('contentBaseLikeCount').value = item.baseLikeCount ?? '';
+  document.getElementById('contentIsPopular').checked = !!item.isPopular;
+
+  document.getElementById('contentSubmitBtn').textContent = 'Update Content';
+  document.getElementById('contentCancelBtn').classList.remove('hidden');
+  clearMessage();
+  document.getElementById('contentTitle').focus();
+}
+
+function resetForm() {
+  editingId = null;
+  document.getElementById('contentForm').reset();
+  document.getElementById('contentSubmitBtn').textContent = 'Add Content';
+  document.getElementById('contentCancelBtn').classList.add('hidden');
+}
+
+function buildPayload() {
+  const personasRaw = document.getElementById('contentPersonas').value.trim();
+  const personas = personasRaw ? personasRaw.split(',').map(p => p.trim()).filter(Boolean) : [];
+
+  const payload = {
+    title: document.getElementById('contentTitle').value.trim(),
+    type: document.getElementById('contentType').value.trim(),
+    genre: document.getElementById('contentGenre').value.trim(),
+    year: Number(document.getElementById('contentYear').value),
+    rating: document.getElementById('contentRating').value.trim(),
+    description: document.getElementById('contentDescription').value.trim(),
+    isPopular: document.getElementById('contentIsPopular').checked,
+  };
+
+  const language = document.getElementById('contentLanguage').value.trim();
+  const img = document.getElementById('contentImg').value.trim();
+  const baseLikeCount = document.getElementById('contentBaseLikeCount').value;
+
+  if (language) payload.language = language;
+  if (img) payload.img = img;
+  if (personas.length) payload.personas = personas;
+  if (baseLikeCount !== '') payload.baseLikeCount = Number(baseLikeCount);
+
+  return payload;
+}
+
+function validatePayload(payload) {
+  if (!payload.title) return 'Title is required.';
+  if (!payload.type) return 'Type is required.';
+  if (!payload.genre) return 'Genre is required.';
+  if (!Number.isFinite(payload.year)) return 'Year must be a number.';
+  if (!payload.rating) return 'Rating is required.';
+  if (!payload.description) return 'Description is required.';
+  return '';
+}
+
+async function handleFormSubmit(event) {
+  event.preventDefault();
+  clearMessage();
+
+  const payload = buildPayload();
+  const error = validatePayload(payload);
+  if (error) {
+    showMessage(error, 'error');
+    return;
+  }
+
+  try {
+    const res = editingId
+      ? await fetch(`/api/admin/content/${editingId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+      : await fetch('/api/admin/content', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+    const data = await handleResponse(res);
+    if (!data) return;
+
+    showMessage(editingId ? 'Content updated successfully.' : 'Content created successfully.', 'success');
+    resetForm();
+    loadContent();
+  } catch (err) {
+    showMessage('Could not save content.', 'error');
+  }
+}
+
+async function deleteContentItem(id) {
+  const confirmed = confirm('Are you sure you want to delete this content item?');
+  if (!confirmed) return;
+
+  try {
+    const res = await fetch(`/api/admin/content/${id}`, { method: 'DELETE' });
+    const data = await handleResponse(res);
+    if (!data) return;
+
+    if (editingId === id) resetForm();
+    showMessage('Content deleted successfully.', 'success');
+    loadContent();
+  } catch (err) {
+    showMessage('Could not delete content.', 'error');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const isAdmin = await checkAdminAccess();
+  if (!isAdmin) return;
+
+  document.getElementById('contentForm').addEventListener('submit', handleFormSubmit);
+  document.getElementById('contentCancelBtn').addEventListener('click', resetForm);
+
+  loadContent();
+});
