@@ -249,10 +249,16 @@ function thumbStyleFor(item) {
 }
 
 function cardInfoHTML(item) {
+  // small demo hook: only Breaking Bad links out to the dedicated detail/episode page
+  const detailLink = item.title === 'Breaking Bad'
+    ? `<a class="card-detail-link" href="/content-detail.html?persona=${getCurrentPersonaId()}" onclick="event.stopPropagation()">View Episode</a>`
+    : '';
+
   return `
     <div class="card-info">
       <p class="card-title">${escapeHtml(item.title)}</p>
       <p class="card-meta">${escapeHtml(item.type)} &middot; ${item.year} &middot; ${escapeHtml(item.rating)}</p>
+      ${detailLink}
       <div class="card-actions">
         <button class="card-watch-btn${isWatched(item.id) ? ' watched' : ''}" data-watch-id="${item.id}"
           onclick="markContentWatched(${item.id}); event.stopPropagation()">${isWatched(item.id) ? 'Watched' : 'Watch'}</button>

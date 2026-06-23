@@ -43,4 +43,8 @@ router.get('/admin-content.html', requireAuth, requirePageAdmin, (req, res) => {
   res.sendFile('admin-content.html', { root: 'views' });
 });
 
+router.get('/content-detail.html', requireAuth, (req, res) => {
+  res.sendFile('content-detail.html', { root: 'views' });
+});
+
 module.exports = router;

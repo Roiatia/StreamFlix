@@ -1115,3 +1115,99 @@ body {
         padding: 100px 14px 40px;
     }
 }
+
+/* ===== CONTENT DETAIL (Breaking Bad demo) ===== */
+.detail-hero {
+    margin: 20px 4%;
+    padding: 50px 30px;
+    border-radius: 8px;
+    background-size: cover;
+    background-position: center;
+}
+
+.detail-hero-overlay {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.6) 70%, rgba(0, 0, 0, 0.25) 100%);
+    padding: 30px;
+    border-radius: 8px;
+    max-width: 520px;
+}
+
+.detail-hero-overlay h2 {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-bottom: 8px;
+}
+
+.detail-description {
+    color: #e5e5e5;
+    font-size: 14px;
+    font-family: 'Segoe UI', sans-serif;
+    margin-top: 12px;
+    line-height: 1.5;
+}
+
+.episode-section {
+    margin: 30px 4%;
+    padding: 24px;
+    background: #141414;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.episode-section h3 {
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+    margin-bottom: 12px;
+    text-shadow: 1px 1px 4px black;
+}
+
+.episode-description {
+    color: #aaa;
+    font-size: 13px;
+    font-family: 'Segoe UI', sans-serif;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    max-width: 700px;
+}
+
+.episode-watch-area {
+    margin-bottom: 20px;
+}
+
+.video-fallback {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 40px 20px;
+    text-align: center;
+    color: #888;
+    font-family: 'Segoe UI', sans-serif;
+    max-width: 480px;
+}
+
+.episode-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.detail-watch-btn {
+    flex: 0 0 auto;
+    padding: 10px 24px;
+    font-size: 13px;
+}
+
+.card-detail-link {
+    display: inline-block;
+    color: #54b3f7;
+    font-size: 11px;
+    font-family: 'Segoe UI', sans-serif;
+    text-decoration: none;
+    margin: 2px 0 6px;
+}
+
+.card-detail-link:hover {
+    text-decoration: underline;
+}
