@@ -83,7 +83,28 @@ function isWatched(id) {
   return getPersonaState().watchedIds.includes(id);
 }
 
-function markContentWatched(id) {
+// pull this profile's watch history from MongoDB and merge it into the local
+// state, so a fresh browser/device still shows the right watched cards
+async function loadServerWatchHistory() {
+  try {
+    const res = await fetch(`/api/watch-history?profile=${getCurrentPersonaId()}`);
+    if (!res.ok) {
+      console.warn('Could not load watch history from the server; using local storage only.');
+      return;
+    }
+
+    const data = await res.json();
+    const serverWatchedIds = (data.items || []).map(item => item.contentId);
+
+    const state = getPersonaState();
+    state.watchedIds = [...new Set([...state.watchedIds, ...serverWatchedIds])];
+    savePersonaState(state);
+  } catch (err) {
+    console.warn('Could not reach the watch history API; using local storage only.', err);
+  }
+}
+
+async function markContentWatched(id) {
   const state = getPersonaState();
 
   if (state.watchedIds.includes(id)) {
@@ -91,6 +112,27 @@ function markContentWatched(id) {
     return;
   }
 
+  try {
+    const res = await fetch('/api/watch-history', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        profileId: getCurrentPersonaId(),
+        contentId: id,
+        completed: true,
+        progressSeconds: 0,
+      }),
+    });
+
+    if (!res.ok) {
+      console.warn('Could not save watch history to the server; using local storage only.');
+    }
+  } catch (err) {
+    console.warn('Could not reach the watch history API; using local storage only.', err);
+  }
+
+  // update local state regardless of whether the API call succeeded, so the
+  // UI keeps working even when the server/network is unavailable
   state.watchedIds.push(id);
   savePersonaState(state);
 
@@ -498,6 +540,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   // don't show anything until the server data is ready
   const loaded = await loadServerData();
   if (!loaded) return;
+
+  await loadServerWatchHistory();
 
   initNavPersona();
   renderHomeContent();

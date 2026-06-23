@@ -1,26 +1,12 @@
-async function loadStatisticsData() {
-  const response = await fetch('/api/content?persona=guest');
+async function fetchStatsItems(endpoint) {
+  const response = await fetch(endpoint);
   const data = await response.json();
 
-  if (!response.ok) {
-    throw new Error(data.error || 'Could not load statistics data.');
+  if (!response.ok || !data.success) {
+    throw new Error((data && data.error) || 'Could not load statistics.');
   }
 
   return data.items || [];
-}
-
-function groupByField(items, field) {
-  const result = {};
-
-  items.forEach(item => {
-    const key = item[field] || 'Unknown';
-    result[key] = (result[key] || 0) + 1;
-  });
-
-  return Object.entries(result).map(([label, value]) => ({
-    label,
-    value
-  }));
 }
 
 function renderBarChart(selector, data) {
@@ -84,24 +70,35 @@ function renderBarChart(selector, data) {
     .text(d => d.value);
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+function showChartMessage(selector, message) {
+  d3.select(selector).html(`<div class="empty-state"><p>${message}</p></div>`);
+}
+
+// loads one chart independently so a failure/empty result on one endpoint
+// doesn't take down the other charts on the page
+async function loadChart(selector, endpoint, emptyMessage) {
+  try {
+    const items = await fetchStatsItems(endpoint);
+
+    if (!items.length) {
+      showChartMessage(selector, emptyMessage);
+      return;
+    }
+
+    renderBarChart(selector, items);
+  } catch (error) {
+    console.error(`Could not load chart for ${endpoint}:`, error);
+    showChartMessage(selector, error.message);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
   drawStatsCanvas();
 
-  try {
-    const items = await loadStatisticsData();
-
-    const genreData = groupByField(items, 'genre');
-    const typeData = groupByField(items, 'type');
-
-    renderBarChart('#genreChart', genreData);
-    renderBarChart('#typeChart', typeData);
-  } catch (error) {
-    document.querySelector('.stats-grid').innerHTML = `
-      <div class="empty-state">
-        <p>${error.message}</p>
-      </div>
-    `;
-  }
+  loadChart('#genreChart', '/api/stats/content-by-genre', 'No genre data available.');
+  loadChart('#typeChart', '/api/stats/content-by-type', 'No type data available.');
+  loadChart('#viewsByContentChart', '/api/stats/views-by-content', 'No watch history yet.');
+  loadChart('#viewsByGenreChart', '/api/stats/views-by-genre', 'No watch history yet.');
 });
 
 function drawStatsCanvas() {
