@@ -1,4 +1,5 @@
 const Profile = require('../models/profileModel');
+const { logOperation, logError } = require('../utils/logger');
 
 function escapeRegex(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -10,9 +11,11 @@ function toFrontendProfile(p) {
 
 async function getPersonas(req, res) {
   try {
-    const profiles = await Profile.find().sort({ createdAt: 1 });
-    res.json(profiles.map(p => ({ id: p.legacyId, name: p.name, avatar: p.avatar })));
+    const filter = req.user.role === 'admin' ? {} : { userId: req.user.userId };
+    const profiles = await Profile.find(filter).sort({ createdAt: 1 });
+    res.json(profiles.map(toFrontendProfile));
   } catch (err) {
+    logError('getPersonas', err);
     res.status(500).json({ error: 'Could not load profiles.' });
   }
 }
@@ -43,13 +46,16 @@ async function createPersona(req, res) {
     }
 
     const profile = await Profile.create({
+      userId:   req.user.userId,
       legacyId,
       name,
       avatar: 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png',
     });
 
-    res.status(201).json({ id: profile.legacyId, name: profile.name, avatar: profile.avatar });
+    logOperation('PROFILE_CREATED', `legacyId=${profile.legacyId} by=${req.user.email}`);
+    res.status(201).json(toFrontendProfile(profile));
   } catch (err) {
+    logError('createPersona', err);
     res.status(500).json({ error: 'Could not create profile.' });
   }
 }
@@ -57,21 +63,27 @@ async function createPersona(req, res) {
 async function searchProfiles(req, res) {
   try {
     const q = (req.query.q || '').trim();
-    let filter = {};
+    const ownerFilter = req.user.role === 'admin' ? {} : { userId: req.user.userId };
+
+    let filter = ownerFilter;
 
     if (q) {
       const escaped = escapeRegex(q);
-      filter = {
+      const textFilter = {
         $or: [
-          { name: { $regex: escaped, $options: 'i' } },
+          { name:     { $regex: escaped, $options: 'i' } },
           { legacyId: { $regex: escaped, $options: 'i' } },
         ],
       };
+      filter = req.user.role === 'admin'
+        ? textFilter
+        : { $and: [ownerFilter, textFilter] };
     }
 
     const profiles = await Profile.find(filter).sort({ createdAt: 1 });
     res.json(profiles.map(toFrontendProfile));
   } catch (err) {
+    logError('searchProfiles', err);
     res.status(500).json({ error: 'Could not search profiles.' });
   }
 }
@@ -81,6 +93,11 @@ async function updateProfile(req, res) {
     const profile = await Profile.findOne({ legacyId: req.params.id });
     if (!profile) {
       return res.status(404).json({ error: 'Profile not found.' });
+    }
+
+    const isOwner = profile.userId && profile.userId.toString() === req.user.userId;
+    if (!isOwner && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Forbidden.' });
     }
 
     const { name, avatar, age, preferences } = req.body;
@@ -113,8 +130,10 @@ async function updateProfile(req, res) {
     }
 
     await profile.save();
+    logOperation('PROFILE_UPDATED', `legacyId=${profile.legacyId} by=${req.user.email}`);
     res.json(toFrontendProfile(profile));
   } catch (err) {
+    logError('updateProfile', err);
     res.status(500).json({ error: 'Could not update profile.' });
   }
 }
@@ -125,13 +144,21 @@ async function deleteProfile(req, res) {
       return res.status(400).json({ error: 'The guest profile cannot be deleted.' });
     }
 
-    const deleted = await Profile.findOneAndDelete({ legacyId: req.params.id });
-    if (!deleted) {
+    const profile = await Profile.findOne({ legacyId: req.params.id });
+    if (!profile) {
       return res.status(404).json({ error: 'Profile not found.' });
     }
 
+    const isOwner = profile.userId && profile.userId.toString() === req.user.userId;
+    if (!isOwner && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Forbidden.' });
+    }
+
+    await profile.deleteOne();
+    logOperation('PROFILE_DELETED', `legacyId=${profile.legacyId} by=${req.user.email}`);
     res.json({ success: true });
   } catch (err) {
+    logError('deleteProfile', err);
     res.status(500).json({ error: 'Could not delete profile.' });
   }
 }

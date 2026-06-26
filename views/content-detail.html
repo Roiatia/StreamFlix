@@ -29,7 +29,7 @@
     </header>
 
     <main class="content-area">
-        <section class="detail-hero" style="background-image: url('/content-images/Breaking bad.jpg');">
+        <section class="detail-hero">
             <div class="detail-hero-overlay">
                 <h2>Breaking Bad</h2>
                 <p class="card-meta">TV Show &middot; 2008 &middot; TV-MA &middot; crime &middot; English</p>
@@ -41,7 +41,7 @@
 
         <section class="episode-section">
             <h3>Season 1, Episode 1 &mdash; Pilot</h3>
-            <p class="episode-description">
+            <p class="episode-description multi-column-text">
                 Walter White, a struggling high school chemistry teacher, is diagnosed with terminal cancer.
                 To secure his family's future, he partners with a former student to cook and sell methamphetamine,
                 taking his first dangerous steps into a hidden criminal world.
@@ -50,7 +50,7 @@
             <div class="episode-watch-area">
                 <div class="trailer-wrapper">
                     <iframe
-                        src="https://www.youtube-nocookie.com/embed/HhesaQXLuRY"
+                        src="https://www.youtube.com/embed/HhesaQXLuRY"
                         title="Breaking Bad Trailer (First Season)"
                         allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen
@@ -65,8 +65,62 @@
 
             <div id="watchMessage" class="post-message hidden"></div>
         </section>
+
+        <section class="episode-section">
+            <h3>Season 1, Episode 2 &mdash; Cat&rsquo;s in the Bag&hellip;</h3>
+            <p class="episode-description">
+                Walt and Jesse are left scrambling to clean up the aftermath of their first cook.
+                As the pressure mounts and their cover story grows thin, both men discover how far
+                they are willing to go to protect themselves and each other.
+            </p>
+
+            <div class="episode-watch-area">
+                <video controls class="detail-video">
+                    <source src="/videos/streamflix-demo.mp4" type="video/mp4">
+                    Your browser does not support the HTML5 video element.
+                </video>
+            </div>
+        </section>
+
+        <section class="reviews-section">
+            <h3 class="reviews-heading">Reviews &amp; Ratings</h3>
+
+            <div class="review-form">
+                <select id="reviewRating" class="review-select">
+                    <option value="">-- select rating --</option>
+                    <option value="1">1 &#9733; Poor</option>
+                    <option value="2">2 &#9733; Fair</option>
+                    <option value="3">3 &#9733; Good</option>
+                    <option value="4">4 &#9733; Great</option>
+                    <option value="5">5 &#9733; Excellent</option>
+                </select>
+                <textarea id="reviewText" class="post-input post-textarea" placeholder="Write your review…"></textarea>
+                <div class="review-form-actions">
+                    <button id="reviewSubmitBtn" class="admin-submit-btn">Post Review</button>
+                    <button id="reviewCancelBtn" class="post-cancel-btn hidden">Cancel</button>
+                </div>
+                <div id="reviewMessage" class="post-message hidden"></div>
+            </div>
+
+            <div class="review-search">
+                <input type="text" id="reviewSearchText" class="post-input review-search-input" placeholder="Search reviews…">
+                <select id="reviewSearchMin" class="review-select">
+                    <option value="">Any rating</option>
+                    <option value="1">1+</option>
+                    <option value="2">2+</option>
+                    <option value="3">3+</option>
+                    <option value="4">4+</option>
+                    <option value="5">5 only</option>
+                </select>
+                <button id="reviewSearchBtn" class="btn-search">Search</button>
+                <button id="reviewClearBtn" class="post-cancel-btn">Clear</button>
+            </div>
+
+            <div id="reviewsList"></div>
+        </section>
     </main>
 
+    <script src="/js/persona-navigation.js"></script>
     <script src="/js/content-detail.js"></script>
     <footer class="site-footer">
         <p>© 2026 StreamFlix. Educational project.</p>

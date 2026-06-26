@@ -1,21 +1,3 @@
-let allContent = [];
-
-async function loadAllContent() {
-  try {
-    const response = await fetch('/api/content?persona=guest');
-    const data = await response.json();
-
-    if (!response.ok) {
-      showSearchError(data.error || 'Could not load content.');
-      return;
-    }
-
-    allContent = data.items || [];
-  } catch (error) {
-    showSearchError('Server error while loading content.');
-  }
-}
-
 function escapeHtml(str) {
   return String(str || '')
     .replace(/&/g, '&amp;')
@@ -57,39 +39,42 @@ function renderResults(items) {
   `).join('');
 }
 
+// fetch from the search endpoint and render; omits any blank values from the query string
+async function fetchAndRender(params) {
+  try {
+    const query = new URLSearchParams();
+    for (const [key, val] of Object.entries(params)) {
+      if (val !== '' && val != null) query.set(key, val);
+    }
+    const qs  = query.toString();
+    const res  = await fetch('/api/content/search' + (qs ? '?' + qs : ''));
+    const data = await res.json();
+
+    if (!res.ok) {
+      showSearchError(data.error || 'Could not load content.');
+      return;
+    }
+
+    renderResults(data.items || []);
+  } catch (err) {
+    showSearchError('Server error while loading content.');
+  }
+}
+
 function runContentSearch() {
-  const title = document.getElementById('titleSearch').value.trim().toLowerCase();
-  const genre = document.getElementById('genreSearch').value;
-  const year = Number(document.getElementById('yearSearch').value);
-
-  const results = allContent.filter(item => {
-    const matchesTitle = !title || String(item.title).toLowerCase().includes(title);
-    const matchesGenre = !genre || item.genre === genre;
-    const matchesYear = !year || Number(item.year) >= year;
-
-    return matchesTitle && matchesGenre && matchesYear;
-  });
-
-  renderResults(results);
+  const q       = document.getElementById('titleSearch').value.trim();
+  const genre   = document.getElementById('genreSearch').value;
+  const minYear = document.getElementById('yearSearch').value.trim();
+  fetchAndRender({ q, genre, minYear });
 }
 
 function runMetaSearch() {
-  const type = document.getElementById('typeSearch').value;
-  const language = document.getElementById('languageSearch').value.trim().toLowerCase();
-  const rating = document.getElementById('ratingSearch').value.trim().toLowerCase();
-
-  const results = allContent.filter(item => {
-    const matchesType = !type || item.type === type;
-    const matchesLanguage = !language || String(item.language || '').toLowerCase().includes(language);
-    const matchesRating = !rating || String(item.rating || '').toLowerCase().includes(rating);
-
-    return matchesType && matchesLanguage && matchesRating;
-  });
-
-  renderResults(results);
+  const type     = document.getElementById('typeSearch').value;
+  const language = document.getElementById('languageSearch').value.trim();
+  const rating   = document.getElementById('ratingSearch').value.trim();
+  fetchAndRender({ type, language, rating });
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  await loadAllContent();
-  renderResults(allContent);
+document.addEventListener('DOMContentLoaded', () => {
+  fetchAndRender({});
 });

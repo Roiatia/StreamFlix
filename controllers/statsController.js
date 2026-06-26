@@ -1,5 +1,6 @@
 const Content = require('../models/contentModel');
 const WatchHistory = require('../models/watchHistoryModel');
+const { logError } = require('../utils/logger');
 
 async function getContentByGenre(req, res) {
   try {
@@ -11,6 +12,7 @@ async function getContentByGenre(req, res) {
 
     res.json({ success: true, items });
   } catch (err) {
+    logError('getContentByGenre', err);
     res.status(500).json({ success: false, error: 'Could not load genre statistics.' });
   }
 }
@@ -25,6 +27,7 @@ async function getContentByType(req, res) {
 
     res.json({ success: true, items });
   } catch (err) {
+    logError('getContentByType', err);
     res.status(500).json({ success: false, error: 'Could not load type statistics.' });
   }
 }
@@ -56,6 +59,7 @@ async function getViewsByContent(req, res) {
 
     res.json({ success: true, items });
   } catch (err) {
+    logError('getViewsByContent', err);
     res.status(500).json({ success: false, error: 'Could not load views-by-content statistics.' });
   }
 }
@@ -79,6 +83,7 @@ async function getViewsByGenre(req, res) {
 
     res.json({ success: true, items });
   } catch (err) {
+    logError('getViewsByGenre', err);
     res.status(500).json({ success: false, error: 'Could not load views-by-genre statistics.' });
   }
 }

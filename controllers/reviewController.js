@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Review  = require('../models/reviewModel');
 const Content = require('../models/contentModel');
 const Profile = require('../models/profileModel');
+const { logOperation, logError } = require('../utils/logger');
 
 function escapeRegex(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -39,6 +40,7 @@ async function getReviewsForContent(req, res) {
 
     res.json({ success: true, reviews: reviews.map(toReviewJSON) });
   } catch (err) {
+    logError('getReviewsForContent', err);
     res.status(500).json({ success: false, error: 'Could not load reviews.' });
   }
 }
@@ -71,6 +73,11 @@ async function createReview(req, res) {
       return res.status(404).json({ success: false, error: 'Profile not found.' });
     }
 
+    const isProfileOwner = profile.userId && profile.userId.toString() === req.user.userId;
+    if (!isProfileOwner && req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, error: 'Forbidden.' });
+    }
+
     const review = await Review.create({
       userId:    req.user.userId,
       profileId: profile._id,
@@ -82,8 +89,10 @@ async function createReview(req, res) {
     await review.populate('contentId', 'legacyId');
     await review.populate('profileId', 'legacyId');
 
+    logOperation('REVIEW_CREATED', `id=${review._id} contentId=${contentLegacyId} rating=${ratingNum} by=${req.user.email}`);
     res.status(201).json({ success: true, review: toReviewJSON(review) });
   } catch (err) {
+    logError('createReview', err);
     res.status(500).json({ success: false, error: 'Could not create review.' });
   }
 }
@@ -123,8 +132,10 @@ async function updateReview(req, res) {
     await review.populate('contentId', 'legacyId');
     await review.populate('profileId', 'legacyId');
 
+    logOperation('REVIEW_UPDATED', `id=${id} by=${req.user.email}`);
     res.json({ success: true, review: toReviewJSON(review) });
   } catch (err) {
+    logError('updateReview', err);
     res.status(500).json({ success: false, error: 'Could not update review.' });
   }
 }
@@ -148,8 +159,10 @@ async function deleteReview(req, res) {
     }
 
     await Review.deleteOne({ _id: id });
+    logOperation('REVIEW_DELETED', `id=${id} by=${req.user.email}`);
     res.json({ success: true });
   } catch (err) {
+    logError('deleteReview', err);
     res.status(500).json({ success: false, error: 'Could not delete review.' });
   }
 }
@@ -204,6 +217,7 @@ async function searchReviews(req, res) {
 
     res.json({ success: true, reviews: reviews.map(toReviewJSON) });
   } catch (err) {
+    logError('searchReviews', err);
     res.status(500).json({ success: false, error: 'Could not search reviews.' });
   }
 }
