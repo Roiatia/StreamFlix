@@ -242,5 +242,141 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('contentForm').addEventListener('submit', handleFormSubmit);
   document.getElementById('contentCancelBtn').addEventListener('click', resetForm);
 
+  document.getElementById('locationForm').addEventListener('submit', handleLocationSubmit);
+  document.getElementById('locationCancelBtn').addEventListener('click', resetLocationForm);
+
   loadContent();
+  loadLocations();
 });
+
+// ---- Locations ----
+
+let allLocations = [];
+let editingLocationId = null;
+
+function showLocationMessage(text, type) {
+  const el = document.getElementById('locationMessage');
+  el.textContent = text;
+  el.classList.remove('hidden', 'admin-message-success', 'admin-message-error');
+  el.classList.add(`admin-message-${type}`);
+}
+
+function clearLocationMessage() {
+  const el = document.getElementById('locationMessage');
+  el.classList.add('hidden');
+  el.textContent = '';
+}
+
+async function loadLocations() {
+  try {
+    const res  = await fetch('/api/admin/locations');
+    const data = await handleResponse(res);
+    if (!data) return;
+    allLocations = data.locations || [];
+    renderLocationsTable();
+  } catch (err) {
+    showLocationMessage('Could not load locations.', 'error');
+  }
+}
+
+function renderLocationsTable() {
+  const tbody = document.getElementById('adminLocationsBody');
+  if (!allLocations.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="admin-empty">No locations yet.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = allLocations.map(loc => `
+    <tr>
+      <td>${escapeHtml(loc.name)}</td>
+      <td>${escapeHtml(loc.address)}</td>
+      <td>${loc.lat}</td>
+      <td>${loc.lng}</td>
+      <td class="admin-row-actions">
+        <button type="button" class="admin-edit-btn" data-id="${loc._id}">Edit</button>
+        <button type="button" class="admin-delete-btn" data-id="${loc._id}">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+
+  tbody.querySelectorAll('.admin-edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => startLocationEdit(btn.dataset.id));
+  });
+  tbody.querySelectorAll('.admin-delete-btn').forEach(btn => {
+    btn.addEventListener('click', () => deleteLocation(btn.dataset.id));
+  });
+}
+
+function startLocationEdit(id) {
+  const loc = allLocations.find(l => l._id === id);
+  if (!loc) return;
+  editingLocationId = id;
+  document.getElementById('locationName').value    = loc.name    || '';
+  document.getElementById('locationAddress').value = loc.address || '';
+  document.getElementById('locationLat').value     = loc.lat     ?? '';
+  document.getElementById('locationLng').value     = loc.lng     ?? '';
+  document.getElementById('locationSubmitBtn').textContent = 'Update Location';
+  document.getElementById('locationCancelBtn').classList.remove('hidden');
+  clearLocationMessage();
+  document.getElementById('locationName').focus();
+}
+
+function resetLocationForm() {
+  editingLocationId = null;
+  document.getElementById('locationForm').reset();
+  document.getElementById('locationSubmitBtn').textContent = 'Add Location';
+  document.getElementById('locationCancelBtn').classList.add('hidden');
+}
+
+async function handleLocationSubmit(event) {
+  event.preventDefault();
+  clearLocationMessage();
+
+  const name    = document.getElementById('locationName').value.trim();
+  const address = document.getElementById('locationAddress').value.trim();
+  const lat     = parseFloat(document.getElementById('locationLat').value);
+  const lng     = parseFloat(document.getElementById('locationLng').value);
+
+  if (!name)                 return showLocationMessage('Name is required.', 'error');
+  if (!address)              return showLocationMessage('Address is required.', 'error');
+  if (!Number.isFinite(lat)) return showLocationMessage('Latitude must be a number.', 'error');
+  if (!Number.isFinite(lng)) return showLocationMessage('Longitude must be a number.', 'error');
+
+  const payload = { name, address, lat, lng };
+
+  try {
+    const res = editingLocationId
+      ? await fetch(`/api/admin/locations/${editingLocationId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+      : await fetch('/api/admin/locations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+    const data = await handleResponse(res);
+    if (!data) return;
+
+    showLocationMessage(editingLocationId ? 'Location updated.' : 'Location created.', 'success');
+    resetLocationForm();
+    loadLocations();
+  } catch (err) {
+    showLocationMessage('Could not save location.', 'error');
+  }
+}
+
+async function deleteLocation(id) {
+  if (!confirm('Delete this location?')) return;
+  try {
+    const res  = await fetch(`/api/admin/locations/${id}`, { method: 'DELETE' });
+    const data = await handleResponse(res);
+    if (!data) return;
+    if (editingLocationId === id) resetLocationForm();
+    showLocationMessage('Location deleted.', 'success');
+    loadLocations();
+  } catch (err) {
+    showLocationMessage('Could not delete location.', 'error');
+  }
+}
