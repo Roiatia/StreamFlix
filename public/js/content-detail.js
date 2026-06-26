@@ -45,14 +45,6 @@ async function markEpisodeWatched() {
   }
 }
 
-// if the demo episode file can't be loaded, swap in a friendly placeholder
-// instead of leaving a broken video box on the page
-function handleVideoError() {
-  document.getElementById('episodeVideo')?.classList.add('hidden');
-  document.getElementById('videoFallback')?.classList.remove('hidden');
-}
-
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('watchEpisodeBtn')?.addEventListener('click', markEpisodeWatched);
-  document.getElementById('episodeVideo')?.addEventListener('error', handleVideoError, true);
 });
