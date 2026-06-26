@@ -82,6 +82,43 @@
                     </tbody>
                 </table>
             </section>
+
+            <hr style="border-color:#333; margin: 2rem 0;">
+
+            <h2 class="admin-title" style="font-size:1.4rem;">Locations Management</h2>
+
+            <div id="locationMessage" class="admin-message hidden"></div>
+
+            <section class="admin-form-section">
+                <form id="locationForm" class="admin-form" novalidate>
+                    <div class="admin-form-grid">
+                        <input type="text"   id="locationName"    class="admin-input" placeholder="Name *">
+                        <input type="text"   id="locationAddress" class="admin-input" placeholder="Address *">
+                        <input type="number" id="locationLat"     class="admin-input" placeholder="Latitude * (-90 to 90)" step="any">
+                        <input type="number" id="locationLng"     class="admin-input" placeholder="Longitude * (-180 to 180)" step="any">
+                    </div>
+                    <div class="admin-form-actions">
+                        <button type="submit" id="locationSubmitBtn" class="admin-submit-btn">Add Location</button>
+                        <button type="button" id="locationCancelBtn" class="admin-cancel-btn hidden">Cancel</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="admin-table-section">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Lat</th>
+                            <th>Lng</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminLocationsBody">
+                    </tbody>
+                </table>
+            </section>
         </div>
     </main>
 

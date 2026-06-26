@@ -1,10 +1,11 @@
 require('dotenv').config();
 
-const mongoose = require('mongoose');
-const bcrypt   = require('bcryptjs');
-const User     = require('../models/userModel');
-const Profile  = require('../models/profileModel');
-const Content  = require('../models/contentModel');
+const mongoose  = require('mongoose');
+const bcrypt    = require('bcryptjs');
+const User      = require('../models/userModel');
+const Profile   = require('../models/profileModel');
+const Content   = require('../models/contentModel');
+const Location  = require('../models/locationModel');
 
 const personasData = require('../data/personas.json');
 const contentData  = require('../data/content.json');
@@ -63,6 +64,21 @@ async function seed() {
     );
   }
   console.log(`${items.length} content items seeded`);
+
+  // Locations for the map page
+  const locationSeeds = [
+    { name: 'StreamFlix Tel Aviv Office',  address: 'Tel Aviv, Israel',    lat: 32.0853, lng: 34.7818 },
+    { name: 'StreamFlix Sderot Branch',    address: 'Sderot, Israel',      lat: 31.5250, lng: 34.5969 },
+    { name: 'StreamFlix Jerusalem Studio', address: 'Jerusalem, Israel',   lat: 31.7683, lng: 35.2137 },
+  ];
+  for (const loc of locationSeeds) {
+    await Location.findOneAndUpdate(
+      { name: loc.name },
+      { $set: loc },
+      { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
+    );
+  }
+  console.log(`${locationSeeds.length} locations seeded`);
 
   await mongoose.disconnect();
   console.log('Seed complete');

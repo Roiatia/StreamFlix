@@ -1,26 +1,24 @@
-const locations = [
-  {
-    name: 'StreamFlix Tel Aviv Office',
-    address: 'Tel Aviv, Israel',
-    lat: 32.0853,
-    lng: 34.7818
-  },
-  {
-    name: 'StreamFlix Sderot Branch',
-    address: 'Sderot, Israel',
-    lat: 31.5250,
-    lng: 34.5969
-  },
-  {
-    name: 'StreamFlix Jerusalem Studio',
-    address: 'Jerusalem, Israel',
-    lat: 31.7683,
-    lng: 35.2137
-  }
-];
+// loadMap is called by the Bing Maps SDK as a global callback
+async function loadMap() {
+  const mapEl = document.getElementById('map');
 
-function loadMap() {
-  const map = new Microsoft.Maps.Map(document.getElementById('map'), {
+  let locations;
+  try {
+    const res = await fetch('/api/locations');
+    if (!res.ok) throw new Error('Server returned ' + res.status);
+    const data = await res.json();
+    locations = data.locations || [];
+  } catch (err) {
+    mapEl.textContent = 'Could not load map locations. Please try again later.';
+    return;
+  }
+
+  if (!locations.length) {
+    mapEl.textContent = 'No locations to display.';
+    return;
+  }
+
+  const map = new Microsoft.Maps.Map(mapEl, {
     center: new Microsoft.Maps.Location(31.9, 34.9),
     zoom: 7
   });
@@ -33,7 +31,6 @@ function loadMap() {
         subTitle: location.address
       }
     );
-
     map.entities.push(pin);
   });
 }
