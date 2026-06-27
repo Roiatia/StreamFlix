@@ -27,6 +27,28 @@
         <button class="btn btn-outline-secondary manage-profiles text-uppercase mt-2 px-4 py-2">
             Manage Profiles
         </button>
+        <div id="profile-message" class="d-none"></div>
+    </div>
+
+    <!-- Edit Profile modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content add-profile-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profile</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="edit-persona-name" class="form-control persona-name-input"
+                        placeholder="Enter a name" maxlength="30">
+                    <div id="edit-persona-error" class="text-danger mt-2 d-none"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="save-edit-btn">Save</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Add Profile modal -->

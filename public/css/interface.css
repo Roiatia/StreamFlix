@@ -189,7 +189,7 @@ body {
 .scroll-btn {
     position: absolute;
     top: 0;
-    height: 250px;
+    bottom: 0;
     width: 50px;
     background: rgba(0, 0, 0, 0.6);
     border: none;
@@ -906,6 +906,20 @@ body {
     margin-bottom: 20px;
 }
 
+.admin-section-divider {
+    border: 0;
+    border-top: 1px solid #333;
+    margin: 2rem 0 1.5rem;
+}
+
+.admin-section-title {
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-bottom: 20px;
+}
+
 .admin-message {
     padding: 10px 14px;
     border-radius: 4px;
@@ -1099,6 +1113,13 @@ body {
     background: rgba(229, 9, 20, 0.08);
 }
 
+.admin-table-search {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+}
+
 .admin-empty {
     text-align: center;
     color: #555;
@@ -1114,6 +1135,14 @@ body {
     .admin-content-area {
         padding: 100px 14px 40px;
     }
+
+    .admin-section-divider {
+        margin: 1.25rem 0 1rem;
+    }
+
+    .multi-column-text {
+        column-count: 1;
+    }
 }
 
 /* ===== CONTENT DETAIL (Breaking Bad demo) ===== */
@@ -1121,6 +1150,7 @@ body {
     margin: 20px 4%;
     padding: 50px 30px;
     border-radius: 8px;
+    background-image: url('/content-images/Breaking bad.jpg');
     background-size: cover;
     background-position: center;
 }
@@ -1148,12 +1178,16 @@ body {
     line-height: 1.5;
 }
 
-.episode-section {
-    margin: 30px 4%;
+.episode-section,
+.reviews-section {
     padding: 24px;
     background: #141414;
     border-radius: 8px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.episode-section {
+    margin: 30px 4% 0;
 }
 
 .episode-section h3 {
@@ -1202,6 +1236,14 @@ body {
     color: #888;
     font-family: 'Segoe UI', sans-serif;
     max-width: 480px;
+    overflow: hidden;
+}
+
+.detail-video {
+    width: min(100%, 480px);
+    display: block;
+    border-radius: 6px;
+    background: #000;
 }
 
 .episode-actions {
@@ -1227,4 +1269,75 @@ body {
 
 .card-detail-link:hover {
     text-decoration: underline;
+}
+
+/* ===== REVIEWS SECTION (content-detail page) ===== */
+.reviews-section {
+    margin: 16px 4% 30px;
+}
+
+.reviews-heading {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 4px black;
+}
+
+.review-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #222;
+}
+
+.review-select {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+    color: #e5e5e5;
+    font-size: 14px;
+    font-family: 'Segoe UI', sans-serif;
+    padding: 10px 12px;
+    outline: none;
+    cursor: pointer;
+    width: fit-content;
+}
+
+.review-select:focus {
+    border-color: #e50914;
+}
+
+.review-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.review-rating {
+    color: #e5a50a;
+    font-size: 15px;
+    letter-spacing: 1px;
+}
+
+.review-search {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.review-search-input {
+    flex: 1;
+    min-width: 160px;
+}
+
+.review-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }

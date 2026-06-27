@@ -1,15 +1,15 @@
 let allContent = [];
 let editingId = null;
 
-function showMessage(text, type) {
-  const el = document.getElementById('adminMessage');
+function showMessage(elementId, text, type) {
+  const el = document.getElementById(elementId);
   el.textContent = text;
   el.classList.remove('hidden', 'admin-message-success', 'admin-message-error');
   el.classList.add(`admin-message-${type}`);
 }
 
-function clearMessage() {
-  const el = document.getElementById('adminMessage');
+function clearMessage(elementId) {
+  const el = document.getElementById(elementId);
   el.classList.add('hidden');
   el.textContent = '';
 }
@@ -22,9 +22,8 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
-// shared response handler for the admin CRUD calls below — surfaces
-// 401/403/400/500 consistently so each caller doesn't repeat this logic
-async function handleResponse(res) {
+// shared response handler — routes errors to the correct message area
+async function handleResponse(res, messageId) {
   let data = null;
   try {
     data = await res.json();
@@ -37,11 +36,11 @@ async function handleResponse(res) {
     return null;
   }
   if (res.status === 403) {
-    showMessage('Admin access is required for this action.', 'error');
+    showMessage(messageId, 'Admin access is required for this action.', 'error');
     return null;
   }
   if (!res.ok) {
-    showMessage((data && (data.error || data.message)) || 'Something went wrong.', 'error');
+    showMessage(messageId, (data && (data.error || data.message)) || 'Something went wrong.', 'error');
     return null;
   }
   return data;
@@ -75,13 +74,13 @@ async function checkAdminAccess() {
 async function loadContent() {
   try {
     const res = await fetch('/api/admin/content');
-    const data = await handleResponse(res);
+    const data = await handleResponse(res, 'adminMessage');
     if (!data) return;
 
     allContent = data.items || [];
     renderTable();
   } catch (err) {
-    showMessage('Could not load content.', 'error');
+    showMessage('adminMessage', 'Could not load content.', 'error');
   }
 }
 
@@ -136,7 +135,7 @@ function startEdit(id) {
 
   document.getElementById('contentSubmitBtn').textContent = 'Update Content';
   document.getElementById('contentCancelBtn').classList.remove('hidden');
-  clearMessage();
+  clearMessage('adminMessage');
   document.getElementById('contentTitle').focus();
 }
 
@@ -185,12 +184,12 @@ function validatePayload(payload) {
 
 async function handleFormSubmit(event) {
   event.preventDefault();
-  clearMessage();
+  clearMessage('adminMessage');
 
   const payload = buildPayload();
   const error = validatePayload(payload);
   if (error) {
-    showMessage(error, 'error');
+    showMessage('adminMessage', error, 'error');
     return;
   }
 
@@ -207,14 +206,14 @@ async function handleFormSubmit(event) {
           body: JSON.stringify(payload),
         });
 
-    const data = await handleResponse(res);
+    const data = await handleResponse(res, 'adminMessage');
     if (!data) return;
 
-    showMessage(editingId ? 'Content updated successfully.' : 'Content created successfully.', 'success');
+    showMessage('adminMessage', editingId ? 'Content updated successfully.' : 'Content created successfully.', 'success');
     resetForm();
     loadContent();
   } catch (err) {
-    showMessage('Could not save content.', 'error');
+    showMessage('adminMessage', 'Could not save content.', 'error');
   }
 }
 
@@ -224,14 +223,14 @@ async function deleteContentItem(id) {
 
   try {
     const res = await fetch(`/api/admin/content/${id}`, { method: 'DELETE' });
-    const data = await handleResponse(res);
+    const data = await handleResponse(res, 'adminMessage');
     if (!data) return;
 
     if (editingId === id) resetForm();
-    showMessage('Content deleted successfully.', 'success');
+    showMessage('adminMessage', 'Content deleted successfully.', 'success');
     loadContent();
   } catch (err) {
-    showMessage('Could not delete content.', 'error');
+    showMessage('adminMessage', 'Could not delete content.', 'error');
   }
 }
 
@@ -244,6 +243,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('locationForm').addEventListener('submit', handleLocationSubmit);
   document.getElementById('locationCancelBtn').addEventListener('click', resetLocationForm);
+  document.getElementById('locationSearch').addEventListener('input', applyLocationSearch);
 
   loadContent();
   loadLocations();
@@ -254,38 +254,37 @@ document.addEventListener('DOMContentLoaded', async () => {
 let allLocations = [];
 let editingLocationId = null;
 
-function showLocationMessage(text, type) {
-  const el = document.getElementById('locationMessage');
-  el.textContent = text;
-  el.classList.remove('hidden', 'admin-message-success', 'admin-message-error');
-  el.classList.add(`admin-message-${type}`);
-}
-
-function clearLocationMessage() {
-  const el = document.getElementById('locationMessage');
-  el.classList.add('hidden');
-  el.textContent = '';
-}
-
 async function loadLocations() {
   try {
     const res  = await fetch('/api/admin/locations');
-    const data = await handleResponse(res);
+    const data = await handleResponse(res, 'locationMessage');
     if (!data) return;
     allLocations = data.locations || [];
-    renderLocationsTable();
+    applyLocationSearch();
   } catch (err) {
-    showLocationMessage('Could not load locations.', 'error');
+    showMessage('locationMessage', 'Could not load locations.', 'error');
   }
 }
 
-function renderLocationsTable() {
+function applyLocationSearch() {
+  const query = document.getElementById('locationSearch')?.value.trim().toLowerCase() || '';
+  const filtered = query
+    ? allLocations.filter(loc =>
+        loc.name.toLowerCase().includes(query) ||
+        loc.address.toLowerCase().includes(query)
+      )
+    : allLocations;
+  renderLocationsTable(filtered);
+}
+
+function renderLocationsTable(locs) {
   const tbody = document.getElementById('adminLocationsBody');
-  if (!allLocations.length) {
-    tbody.innerHTML = '<tr><td colspan="5" class="admin-empty">No locations yet.</td></tr>';
+  if (!locs.length) {
+    const msg = allLocations.length === 0 ? 'No locations yet.' : 'No locations match your search.';
+    tbody.innerHTML = `<tr><td colspan="5" class="admin-empty">${msg}</td></tr>`;
     return;
   }
-  tbody.innerHTML = allLocations.map(loc => `
+  tbody.innerHTML = locs.map(loc => `
     <tr>
       <td>${escapeHtml(loc.name)}</td>
       <td>${escapeHtml(loc.address)}</td>
@@ -316,7 +315,7 @@ function startLocationEdit(id) {
   document.getElementById('locationLng').value     = loc.lng     ?? '';
   document.getElementById('locationSubmitBtn').textContent = 'Update Location';
   document.getElementById('locationCancelBtn').classList.remove('hidden');
-  clearLocationMessage();
+  clearMessage('locationMessage');
   document.getElementById('locationName').focus();
 }
 
@@ -329,17 +328,17 @@ function resetLocationForm() {
 
 async function handleLocationSubmit(event) {
   event.preventDefault();
-  clearLocationMessage();
+  clearMessage('locationMessage');
 
   const name    = document.getElementById('locationName').value.trim();
   const address = document.getElementById('locationAddress').value.trim();
   const lat     = parseFloat(document.getElementById('locationLat').value);
   const lng     = parseFloat(document.getElementById('locationLng').value);
 
-  if (!name)                 return showLocationMessage('Name is required.', 'error');
-  if (!address)              return showLocationMessage('Address is required.', 'error');
-  if (!Number.isFinite(lat)) return showLocationMessage('Latitude must be a number.', 'error');
-  if (!Number.isFinite(lng)) return showLocationMessage('Longitude must be a number.', 'error');
+  if (!name)                 return showMessage('locationMessage', 'Name is required.', 'error');
+  if (!address)              return showMessage('locationMessage', 'Address is required.', 'error');
+  if (!Number.isFinite(lat)) return showMessage('locationMessage', 'Latitude must be a number.', 'error');
+  if (!Number.isFinite(lng)) return showMessage('locationMessage', 'Longitude must be a number.', 'error');
 
   const payload = { name, address, lat, lng };
 
@@ -356,14 +355,14 @@ async function handleLocationSubmit(event) {
           body: JSON.stringify(payload),
         });
 
-    const data = await handleResponse(res);
+    const data = await handleResponse(res, 'locationMessage');
     if (!data) return;
 
-    showLocationMessage(editingLocationId ? 'Location updated.' : 'Location created.', 'success');
+    showMessage('locationMessage', editingLocationId ? 'Location updated.' : 'Location created.', 'success');
     resetLocationForm();
     loadLocations();
   } catch (err) {
-    showLocationMessage('Could not save location.', 'error');
+    showMessage('locationMessage', 'Could not save location.', 'error');
   }
 }
 
@@ -371,12 +370,12 @@ async function deleteLocation(id) {
   if (!confirm('Delete this location?')) return;
   try {
     const res  = await fetch(`/api/admin/locations/${id}`, { method: 'DELETE' });
-    const data = await handleResponse(res);
+    const data = await handleResponse(res, 'locationMessage');
     if (!data) return;
     if (editingLocationId === id) resetLocationForm();
-    showLocationMessage('Location deleted.', 'success');
+    showMessage('locationMessage', 'Location deleted.', 'success');
     loadLocations();
   } catch (err) {
-    showLocationMessage('Could not delete location.', 'error');
+    showMessage('locationMessage', 'Could not delete location.', 'error');
   }
 }

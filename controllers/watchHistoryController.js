@@ -1,6 +1,12 @@
 const WatchHistory = require('../models/watchHistoryModel');
 const Profile = require('../models/profileModel');
 const Content = require('../models/contentModel');
+const { logError } = require('../utils/logger');
+
+function canAccessProfile(profile, user) {
+  if (user.role === 'admin') return true;
+  return profile.userId && profile.userId.toString() === user.userId;
+}
 
 function toContentJSON(doc) {
   return {
@@ -55,6 +61,9 @@ async function upsertWatchHistory(req, res) {
     if (!profile) {
       return res.status(404).json({ success: false, error: 'Profile not found.' });
     }
+    if (!canAccessProfile(profile, req.user)) {
+      return res.status(403).json({ success: false, error: 'Forbidden.' });
+    }
 
     const content = await Content.findOne({ legacyId: contentLegacyId });
     if (!content) {
@@ -88,6 +97,7 @@ async function upsertWatchHistory(req, res) {
       },
     });
   } catch (err) {
+    logError('upsertWatchHistory', err);
     res.status(500).json({ success: false, error: 'Could not save watch history.' });
   }
 }
@@ -103,6 +113,9 @@ async function getWatchHistory(req, res) {
     if (!profile) {
       return res.status(404).json({ success: false, error: 'Profile not found.' });
     }
+    if (!canAccessProfile(profile, req.user)) {
+      return res.status(403).json({ success: false, error: 'Forbidden.' });
+    }
 
     const history = await WatchHistory.find({ userId: req.user.userId, profileId: profile._id })
       .populate('contentId')
@@ -114,6 +127,7 @@ async function getWatchHistory(req, res) {
 
     res.json({ success: true, items });
   } catch (err) {
+    logError('getWatchHistory', err);
     res.status(500).json({ success: false, error: 'Could not load watch history.' });
   }
 }
@@ -134,6 +148,9 @@ async function deleteWatchHistory(req, res) {
     if (!profile) {
       return res.status(404).json({ success: false, error: 'Profile not found.' });
     }
+    if (!canAccessProfile(profile, req.user)) {
+      return res.status(403).json({ success: false, error: 'Forbidden.' });
+    }
 
     const content = await Content.findOne({ legacyId: contentLegacyId });
     if (!content) {
@@ -144,6 +161,7 @@ async function deleteWatchHistory(req, res) {
 
     res.json({ success: true });
   } catch (err) {
+    logError('deleteWatchHistory', err);
     res.status(500).json({ success: false, error: 'Could not delete watch history entry.' });
   }
 }
@@ -158,6 +176,9 @@ async function getPersonalFeed(req, res) {
     const profile = await Profile.findOne({ legacyId: profileLegacyId });
     if (!profile) {
       return res.status(404).json({ success: false, error: 'Profile not found.' });
+    }
+    if (!canAccessProfile(profile, req.user)) {
+      return res.status(403).json({ success: false, error: 'Forbidden.' });
     }
 
     const history = await WatchHistory.find({ userId: req.user.userId, profileId: profile._id })
@@ -217,6 +238,7 @@ async function getPersonalFeed(req, res) {
       watchedIds,
     });
   } catch (err) {
+    logError('getPersonalFeed', err);
     res.status(500).json({ success: false, error: 'Could not build personal feed.' });
   }
 }

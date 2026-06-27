@@ -3,7 +3,6 @@ const router  = express.Router();
 const { requireAuth, requireAdmin } = require('../middlewares/authMiddleware');
 const {
   getLocations,
-  adminGetLocations,
   createLocation,
   updateLocation,
   deleteLocation,
@@ -13,7 +12,7 @@ const {
 router.get('/api/locations', requireAuth, getLocations);
 
 // admin-only CRUD
-router.get('/api/admin/locations',     requireAuth, requireAdmin, adminGetLocations);
+router.get('/api/admin/locations',     requireAuth, requireAdmin, getLocations);
 router.post('/api/admin/locations',    requireAuth, requireAdmin, createLocation);
 router.put('/api/admin/locations/:id', requireAuth, requireAdmin, updateLocation);
 router.delete('/api/admin/locations/:id', requireAuth, requireAdmin, deleteLocation);

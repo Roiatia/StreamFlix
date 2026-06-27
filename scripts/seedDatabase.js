@@ -29,11 +29,14 @@ async function seed() {
   await upsertUser({ name: 'Admin User', email: 'admin@example.com', password: 'admin123', role: 'admin' });
   console.log('Users seeded');
 
+  // seeded demo profiles are owned by the regular test user so the demo flow works on login
+  const testUser = await User.findOne({ email: 'test@example.com' });
+
   // Profiles from personas.json
   for (const p of personasData) {
     await Profile.findOneAndUpdate(
       { legacyId: p.id },
-      { legacyId: p.id, name: p.name, avatar: p.avatar },
+      { legacyId: p.id, name: p.name, avatar: p.avatar, userId: testUser._id },
       { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
     );
   }

@@ -2,6 +2,7 @@ const crypto  = require('crypto');
 const bcrypt  = require('bcryptjs');
 const User    = require('../models/userModel');
 const { sessions, getCookie } = require('../middlewares/authMiddleware');
+const { logOperation, logError } = require('../utils/logger');
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -33,15 +34,21 @@ async function login(req, res) {
     const token = crypto.randomBytes(32).toString('hex');
     sessions.set(token, { userId: user._id.toString(), email: user.email, role: user.role });
     res.cookie('session', token, { httpOnly: true });
+    logOperation('LOGIN', user.email);
     res.redirect('/UserScreen.html');
   } catch (err) {
+    logError('login', err);
     res.redirect(`/?formError=${encodeURIComponent('Something went wrong. Please try again.')}`);
   }
 }
 
 function logout(req, res) {
   const token = getCookie(req, 'session');
-  if (token) sessions.delete(token);
+  if (token) {
+    const session = sessions.get(token);
+    if (session) logOperation('LOGOUT', session.email);
+    sessions.delete(token);
+  }
   res.clearCookie('session');
   res.redirect('/');
 }
@@ -73,8 +80,10 @@ async function register(req, res) {
     const token = crypto.randomBytes(32).toString('hex');
     sessions.set(token, { userId: user._id.toString(), email: user.email, role: user.role });
     res.cookie('session', token, { httpOnly: true });
+    logOperation('REGISTER', user.email);
     res.status(201).json({ success: true });
   } catch (err) {
+    logError('register', err);
     res.status(500).json({ success: false, message: 'Registration failed. Please try again.' });
   }
 }

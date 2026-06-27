@@ -92,6 +92,60 @@ a {
     color: white;
 }
 
+/* manage mode overlay on each profile card */
+.manage-card {
+    position: relative;
+}
+
+.manage-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 150px;
+    background: rgba(0, 0, 0, 0.65);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.manage-edit-btn {
+    background: white;
+    color: #141414;
+    width: 90px;
+    font-weight: 500;
+}
+
+.manage-edit-btn:hover {
+    background: #ddd;
+    color: #141414;
+}
+
+.manage-delete-btn {
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    width: 90px;
+}
+
+.manage-delete-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: white;
+    color: white;
+}
+
+#profile-message {
+    margin-top: 14px;
+    font-size: 0.95rem;
+    min-height: 1.4em;
+}
+
+#profile-message.success { color: #4caf50; }
+#profile-message.error   { color: #e57373; }
+
 /* dark theme for the Add Profile modal */
 .add-profile-modal {
     background: #1a1a1a;

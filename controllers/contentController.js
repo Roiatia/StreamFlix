@@ -1,5 +1,6 @@
 const Profile = require('../models/profileModel');
 const Content = require('../models/contentModel');
+const { logOperation, logError } = require('../utils/logger');
 
 const REQUIRED_CONTENT_FIELDS = ['title', 'type', 'genre', 'year', 'rating', 'description'];
 const UPDATABLE_CONTENT_FIELDS = ['title', 'type', 'genre', 'year', 'rating', 'description', 'language', 'img', 'personas', 'baseLikeCount', 'isPopular'];
@@ -49,6 +50,11 @@ async function getContent(req, res) {
       return res.status(404).json({ error: `Persona '${personaId}' not found.` });
     }
 
+    const isOwner = profile.userId && profile.userId.toString() === req.user.userId;
+    if (!isOwner && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Forbidden.' });
+    }
+
     // new profiles have no content tagged to them yet, so fall back to guest content
     let docs = await Content.find({ personas: personaId });
     if (docs.length === 0) {
@@ -68,6 +74,7 @@ async function getContent(req, res) {
 
     res.json({ items, popularIds, baseLikeCounts });
   } catch (err) {
+    logError('getContent', err);
     res.status(500).json({ error: 'Could not load content.' });
   }
 }
@@ -116,6 +123,7 @@ async function searchContent(req, res) {
     const docs = await Content.find(filter).sort({ legacyId: 1 });
     res.json({ success: true, items: docs.map(toFrontendItem) });
   } catch (err) {
+    logError('searchContent', err);
     res.status(500).json({ success: false, error: 'Could not search content.' });
   }
 }
@@ -125,6 +133,7 @@ async function listAdminContent(req, res) {
     const docs = await Content.find().sort({ legacyId: 1 });
     res.json({ success: true, items: docs.map(toAdminItem) });
   } catch (err) {
+    logError('listAdminContent', err);
     res.status(500).json({ success: false, error: 'Could not load content.' });
   }
 }
@@ -164,8 +173,10 @@ async function createContent(req, res) {
       isPopular:     body.isPopular !== undefined ? Boolean(body.isPopular) : undefined,
     });
 
+    logOperation('CONTENT_CREATED', `id=${doc.legacyId} title="${doc.title}" by=${req.user.email}`);
     res.status(201).json({ success: true, item: toAdminItem(doc) });
   } catch (err) {
+    logError('createContent', err);
     res.status(500).json({ success: false, error: 'Could not create content.' });
   }
 }
@@ -205,8 +216,10 @@ async function updateContent(req, res) {
     }
 
     await doc.save();
+    logOperation('CONTENT_UPDATED', `id=${doc.legacyId} by=${req.user.email}`);
     res.json({ success: true, item: toAdminItem(doc) });
   } catch (err) {
+    logError('updateContent', err);
     res.status(500).json({ success: false, error: 'Could not update content.' });
   }
 }
@@ -223,8 +236,10 @@ async function deleteContent(req, res) {
       return res.status(404).json({ success: false, error: 'Content not found.' });
     }
 
+    logOperation('CONTENT_DELETED', `id=${deleted.legacyId} title="${deleted.title}" by=${req.user.email}`);
     res.json({ success: true });
   } catch (err) {
+    logError('deleteContent', err);
     res.status(500).json({ success: false, error: 'Could not delete content.' });
   }
 }
