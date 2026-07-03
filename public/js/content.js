@@ -355,6 +355,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!loaded) return;
 
   await loadServerWatchHistory();
+  await loadServerLikes();
 
   initNavPersona();
   renderHomeContent();

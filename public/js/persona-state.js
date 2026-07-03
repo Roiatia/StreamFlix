@@ -121,7 +121,25 @@ function getDisplayedLikeCount(id) {
   return (baseLikeCounts[id] || 0) + (isLiked(id) ? 1 : 0);
 }
 
-function toggleLike(id) {
+// pull this profile's likes from MongoDB and merge into local state
+async function loadServerLikes() {
+  try {
+    const res = await fetch(`/api/likes?profile=${getCurrentPersonaId()}`);
+    if (!res.ok) {
+      console.warn('Could not load likes from server; using local storage only.');
+      return;
+    }
+    const data = await res.json();
+    const serverLikedIds = (data.likedIds || []);
+    const state = getPersonaState();
+    state.likedIds = [...new Set([...state.likedIds, ...serverLikedIds])];
+    savePersonaState(state);
+  } catch (err) {
+    console.warn('Could not reach the likes API; using local storage only.', err);
+  }
+}
+
+async function toggleLike(id) {
   const state = getPersonaState();
   const idx = state.likedIds.indexOf(id);
 
@@ -131,8 +149,22 @@ function toggleLike(id) {
     state.likedIds.splice(idx, 1);
   }
 
+  // update local state and UI immediately so the button feels instant
   savePersonaState(state);
   updateLikeButtons(id);
+
+  try {
+    const res = await fetch('/api/likes/toggle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ profileId: getCurrentPersonaId(), contentId: id }),
+    });
+    if (!res.ok) {
+      console.warn('Could not sync like to server; change is in local storage only.');
+    }
+  } catch (err) {
+    console.warn('Could not reach the likes API; change is in local storage only.', err);
+  }
 }
 
 // sync all like buttons for this item and play the heart pop animation
