@@ -99,6 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
   loadChart('#typeChart', '/api/stats/content-by-type', 'No type data available.');
   loadChart('#viewsByContentChart', '/api/stats/views-by-content', 'No watch history yet.');
   loadChart('#viewsByGenreChart', '/api/stats/views-by-genre', 'No watch history yet.');
+  loadChart('#likesByContentChart', '/api/stats/likes-by-content', 'No like data available.');
+  loadChart('#likesByGenreChart', '/api/stats/likes-by-genre', 'No like data available.');
 });
 
 function drawStatsCanvas() {
