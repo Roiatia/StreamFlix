@@ -30,6 +30,10 @@ async function markEpisodeWatched() {
   const btn = document.getElementById('watchEpisodeBtn');
   if (btn.classList.contains('watched')) return;
 
+  // if the HTML5 video has been playing, keep its spot as the final progress
+  const video = document.querySelector('.detail-video');
+  const progressSeconds = video ? Math.floor(video.currentTime) : 0;
+
   try {
     const res = await fetch('/api/watch-history', {
       method: 'POST',
@@ -38,7 +42,7 @@ async function markEpisodeWatched() {
         profileId: getCurrentPersonaId(),
         contentId: BREAKING_BAD_CONTENT_ID,
         completed: true,
-        progressSeconds: 0,
+        progressSeconds: progressSeconds,
       }),
     });
 
@@ -56,6 +60,117 @@ async function markEpisodeWatched() {
   } catch (err) {
     showWatchMessage('Could not reach the server. Please try again later.', 'error');
   }
+}
+
+// ===== CONTINUE WATCHING (HTML5 video only) =====
+
+// turn a number of seconds into mm:ss, e.g. 135 -> "2:15"
+function formatTime(totalSeconds) {
+  const s = Math.floor(totalSeconds);
+  const mins = Math.floor(s / 60);
+  const secs = s % 60;
+  return `${mins}:${String(secs).padStart(2, '0')}`;
+}
+
+// remember where we last saved so timeupdate doesn't hammer the server
+let lastSavedProgress = 0;
+
+// the saved spot from the server, used by the "Continue" button
+let savedResumeSeconds = 0;
+
+// tell the server how far into the video we are
+async function saveProgress(progressSeconds, completed) {
+  try {
+    await fetch('/api/watch-history', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        profileId:       getCurrentPersonaId(),
+        contentId:       BREAKING_BAD_CONTENT_ID,
+        progressSeconds: Math.floor(progressSeconds),
+        completed:       completed,
+      }),
+    });
+    lastSavedProgress = Math.floor(progressSeconds);
+  } catch (err) {
+    // network hiccup - just skip this save, we'll try again on the next event
+  }
+}
+
+// load the saved spot for this content and wire the HTML5 video so it can
+// resume. YouTube iframes can't be controlled, so we only touch the <video>.
+async function initContinueWatching() {
+  const video = document.querySelector('.detail-video');
+  if (!video) return;
+
+  const msg = document.getElementById('continueMessage');
+  const continueBtn = document.getElementById('continueBtn');
+  const startOverBtn = document.getElementById('startOverBtn');
+
+  try {
+    const res = await fetch(`/api/watch-history?profile=${getCurrentPersonaId()}`);
+    if (res.ok) {
+      const data = await res.json();
+      const item = (data.items || []).find(i => i.contentId === BREAKING_BAD_CONTENT_ID);
+      if (item && item.progressSeconds > 0) {
+        savedResumeSeconds = item.progressSeconds;
+        lastSavedProgress = item.progressSeconds;
+
+        if (msg) {
+          msg.textContent = `Continue from ${formatTime(savedResumeSeconds)}`;
+          msg.classList.remove('hidden', 'post-message-error');
+          msg.classList.add('post-message-success');
+        }
+        continueBtn?.classList.remove('hidden');
+      }
+    }
+  } catch (err) {
+    // couldn't load progress - no big deal, the video just starts from 0
+  }
+
+  // jump to the saved spot once the browser knows how long the video is
+  if (savedResumeSeconds > 0) {
+    video.addEventListener('loadedmetadata', () => {
+      if (savedResumeSeconds < video.duration) {
+        video.currentTime = savedResumeSeconds;
+      }
+    });
+  }
+
+  // lets the user jump straight to their saved spot, easy to demo
+  continueBtn?.addEventListener('click', () => {
+    video.currentTime = savedResumeSeconds;
+    video.play();
+  });
+
+  // resets the video and wipes the saved progress back to 0
+  startOverBtn?.addEventListener('click', () => {
+    video.currentTime = 0;
+    savedResumeSeconds = 0;
+    saveProgress(0, false);
+
+    if (msg) {
+      msg.textContent = 'Started from the beginning.';
+      msg.classList.remove('hidden', 'post-message-error');
+      msg.classList.add('post-message-success');
+    }
+    continueBtn?.classList.add('hidden');
+
+    video.play();
+  });
+
+  // save when the user pauses or leaves the page
+  video.addEventListener('pause', () => saveProgress(video.currentTime, false));
+
+  // also save every ~5s while playing so we don't lose progress on a crash
+  video.addEventListener('timeupdate', () => {
+    if (video.currentTime - lastSavedProgress >= 5) {
+      saveProgress(video.currentTime, false);
+    }
+  });
+
+  // finished the whole thing - mark it completed
+  video.addEventListener('ended', () => saveProgress(video.currentTime, true));
 }
 
 // ===== REVIEWS =====
@@ -257,6 +372,8 @@ async function deleteReview(id) {
 
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('watchEpisodeBtn')?.addEventListener('click', markEpisodeWatched);
+
+  initContinueWatching();
 
   document.getElementById('reviewSubmitBtn')?.addEventListener('click', handleReviewSubmit);
   document.getElementById('reviewCancelBtn')?.addEventListener('click', cancelReviewEdit);

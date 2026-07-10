@@ -61,7 +61,10 @@ npm install
 
 ```env
 MONGO_URI=your_mongodb_connection_string
+OMDB_API_KEY=your_omdb_api_key
 ```
+
+> `OMDB_API_KEY` is optional — it is only needed for the "Fetch Movie Info" lookup on the admin content panel. Get a free key at <https://www.omdbapi.com/apikey.aspx>.
 
 3. Seed the database (creates users, profiles, content, and locations):
 
@@ -197,6 +200,7 @@ StreamFlix/
 - **Watch history** — Records which content each profile has watched. Feeds a personalized recommendation row ("Because you watched...").
 - **Statistics** — Four D3.js bar charts showing content by genre, content by type, top viewed content, and views by genre. Data comes from MongoDB aggregation pipelines.
 - **Map** — An interactive Bing Maps page loads filming/studio locations from MongoDB and places pushpin markers on the map.
+- **External movie lookup (OMDb)** — On the admin content panel, a "Fetch Movie Info" button looks a title up on the OMDb API (an IMDB-style external API) and pre-fills the content form (year, genre, rating, plot, poster). Requires `OMDB_API_KEY` in `.env`.
 - **HTML5 video** — The Breaking Bad demo detail page includes a local HTML5 `<video>` element for Episode 2 and an embedded YouTube trailer for Episode 1. The episode description uses a CSS3 multi-column layout.
 - **Server logging** — All create/update/delete operations are appended to `logs/operations.log`. Unexpected server errors are appended to `logs/errors.log`.
 
@@ -214,6 +218,7 @@ StreamFlix/
 | Watch history | `GET /api/watch-history`, `POST /api/watch-history`, `DELETE /api/watch-history/:contentId` |
 | Statistics | `GET /api/stats/by-genre`, `GET /api/stats/by-type`, `GET /api/stats/views-by-content`, `GET /api/stats/views-by-genre` |
 | Locations | `GET /api/locations`, `POST /api/locations`, `PUT /api/locations/:id`, `DELETE /api/locations/:id` |
+| External API | `GET /api/external/movie?title=...` (OMDb lookup, admin only) |
 
 All routes return JSON. Private routes require a valid session token sent as a cookie.
 
@@ -228,7 +233,7 @@ All routes return JSON. Private routes require a valid session token sent as a c
 | Search | Keyword + filter search on content; text search on posts, profiles, and reviews |
 | Aggregation | `WatchHistory.aggregate` and `Content.aggregate` power the statistics page |
 | D3.js | Four bar charts rendered client-side from aggregated server data |
-| External API / Map | Bing Maps SDK with locations loaded from MongoDB via `fetch` |
+| External API / Map | Bing Maps SDK with locations from MongoDB, plus an OMDb (IMDB-style) movie lookup on the admin panel via `GET /api/external/movie` |
 | HTML5 video | `<video>` element with a local MP4 file on the content detail page |
 | CSS3 | Multi-column layout (`column-count`) on episode descriptions |
 | Fetch | All client-side pages use `fetch()` for async JSON API calls |

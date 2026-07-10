@@ -50,6 +50,12 @@
                         <input type="number" id="contentBaseLikeCount" class="admin-input" placeholder="Base Like Count">
                     </div>
 
+                    <!-- fills the fields above from OMDb (IMDB-style external API) using the Title field -->
+                    <div class="admin-form-actions">
+                        <button type="button" id="fetchMovieInfoBtn" class="admin-cancel-btn">Fetch Movie Info</button>
+                    </div>
+                    <div id="omdbMessage" class="admin-message hidden"></div>
+
                     <textarea id="contentDescription" class="admin-input admin-textarea" placeholder="Description *"></textarea>
 
                     <label class="admin-checkbox-label">
