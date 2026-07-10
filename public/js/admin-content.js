@@ -234,12 +234,58 @@ async function deleteContentItem(id) {
   }
 }
 
+// ---- OMDb lookup (external IMDB-style API) ----
+
+// only fill a field when OMDb actually gave us a value ("N/A" = missing),
+// so we never wipe out something the admin already typed
+function fillIfPresent(id, value) {
+  if (value && value !== 'N/A') document.getElementById(id).value = value;
+}
+
+// read the Title field, look the movie up on OMDb, and pre-fill the rest of
+// the form so the admin doesn't have to type everything by hand
+async function fetchExternalMovieInfo() {
+  clearMessage('omdbMessage');
+  const title = document.getElementById('contentTitle').value.trim();
+  if (!title) {
+    showMessage('omdbMessage', 'Enter a title first, then click Fetch Movie Info.', 'error');
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/external/movie?title=${encodeURIComponent(title)}`);
+    const data = await handleResponse(res, 'omdbMessage');
+    if (!data) return;
+
+    const m = data.movie;
+    fillIfPresent('contentTitle', m.title);
+    // OMDb year can be a range like "2008–2013", so keep just the first 4 digits
+    if (m.year && m.year !== 'N/A') fillIfPresent('contentYear', m.year.slice(0, 4));
+    fillIfPresent('contentRating', m.rating);
+    // app stores a single lowercase genre; OMDb sends "Crime, Drama"
+    if (m.genre && m.genre !== 'N/A') fillIfPresent('contentGenre', m.genre.split(',')[0].trim().toLowerCase());
+    fillIfPresent('contentDescription', m.plot);
+    fillIfPresent('contentImg', m.poster);
+
+    // show the key details briefly next to the form
+    const bits = [];
+    if (m.year && m.year !== 'N/A') bits.push(m.year);
+    if (m.rating && m.rating !== 'N/A') bits.push(m.rating);
+    if (m.imdbRating && m.imdbRating !== 'N/A') bits.push(`IMDB ${m.imdbRating}`);
+    const extra = bits.length ? ` (${bits.join(' · ')})` : '';
+    showMessage('omdbMessage', `Movie info loaded from OMDb.${extra}`, 'success');
+  } catch (err) {
+    showMessage('omdbMessage', 'Could not reach the OMDb lookup.', 'error');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   const isAdmin = await checkAdminAccess();
   if (!isAdmin) return;
 
   document.getElementById('contentForm').addEventListener('submit', handleFormSubmit);
   document.getElementById('contentCancelBtn').addEventListener('click', resetForm);
+  document.getElementById('fetchMovieInfoBtn').addEventListener('click', fetchExternalMovieInfo);
 
   document.getElementById('locationForm').addEventListener('submit', handleLocationSubmit);
   document.getElementById('locationCancelBtn').addEventListener('click', resetLocationForm);

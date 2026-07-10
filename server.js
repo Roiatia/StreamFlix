@@ -12,6 +12,7 @@ const watchHistoryRoutes = require('./routes/watchHistoryRoutes');
 const statsRoutes    = require('./routes/statsRoutes');
 const locationRoutes = require('./routes/locationRoutes');
 const likeRoutes     = require('./routes/likeRoutes');
+const externalMovieRoutes = require('./routes/externalMovieRoutes');
 
 connectDB();
 
@@ -32,6 +33,7 @@ app.use('/', watchHistoryRoutes);
 app.use('/', statsRoutes);
 app.use('/', locationRoutes);
 app.use('/', likeRoutes);
+app.use('/', externalMovieRoutes);
 
 app.listen(PORT, "0.0.0.0",() => {
   console.log(`StreamFlix running at http://localhost:${PORT}`);

@@ -80,6 +80,15 @@
                     Your browser does not support the HTML5 video element.
                 </video>
             </div>
+
+            <!-- resume controls for the HTML5 video only - the YouTube trailer above is untouched -->
+            <div class="episode-actions">
+                <button id="continueBtn" class="card-watch-btn detail-watch-btn hidden">Continue from last position</button>
+                <button id="startOverBtn" class="post-cancel-btn">Start from beginning</button>
+            </div>
+
+            <!-- shows "Continue from mm:ss" once we know where the user left off -->
+            <div id="continueMessage" class="post-message hidden"></div>
         </section>
 
         <section class="reviews-section">
